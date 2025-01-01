@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ClientSingleton from '@/clients'
+import {RestClientSingleton} from '@/clients'
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/clients/RestClient'
 import { jwtDecode } from 'jwt-decode'
 import { onBeforeMount, ref } from 'vue'
@@ -32,7 +32,7 @@ const refreshToken = async () => {
     return
   }
   try {
-    const res = await ClientSingleton.refreshToken(refreshToken)
+    const res = await RestClientSingleton.refreshToken(refreshToken)
     localStorage.setItem(ACCESS_TOKEN, res.access)
     isAuthorized.value = true
   } catch (error) {

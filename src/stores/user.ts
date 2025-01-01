@@ -1,4 +1,4 @@
-import ClientSingleton from '@/clients';
+import { RestClientSingleton } from '@/clients';
 import { defineStore } from 'pinia'
 
 export type User = { id: string; username: string; email?: string }
@@ -14,7 +14,7 @@ export const useUserStore = defineStore('user', {
       }
 
       try {
-        this.currentUser = await ClientSingleton.whoAmI()
+        this.currentUser = await RestClientSingleton.whoAmI()
       } catch (error) {
         console.error('Failed to fetch user:', error)
         this.currentUser = null

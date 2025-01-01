@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import ClientSingleton from '@/clients';
-import ProtectedRoute from '@/components/ProtectedRoute.vue'
-import { useUserStore } from '@/stores/user'
+import { GqlClientSingleton } from '@/clients';
+import ProtectedRoute from '@/components/ProtectedRoute.vue';
+import { useUserStore } from '@/stores/user';
 import type { Habit } from '@api/types';
-import { onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue';
 
 const habits = ref<Habit[]>([])
 const userStore = useUserStore()
 const summary = ref([])
-
-// const getQuery = (author: string) => `{\n  habits(author: ${author}) {\n    id\n    name\n    goalTimespan\n    goalType\n    goalFrequency\n    entries {\n      id\n      date\n      description\n    }\n  }\n}`
 
 onMounted(async () => {
   const user = await userStore.getUser()
@@ -17,12 +15,13 @@ onMounted(async () => {
     return
   }
   
-  ClientSingleton.getHabits(user.id).then(({results}) => {
-    habits.value = results
-  })
+  // RestClientSingleton.getHabits(user.id).then(({results}) => {
+  //   habits.value = results
+  // })
 
-  // const userHabits = await api.post('/api/summary', { query: getQuery(user.id) })
-  // summary.value = userHabits.data.data.habits
+  GqlClientSingleton.getUserHabitSummary(user.id, 2).then((data) => {
+    summary.value = data
+  })
 })
 </script>
 
@@ -33,7 +32,7 @@ onMounted(async () => {
     </div>
     <br/>
     <br/>
-    <div v-for="(item, idx) in summary" :key="idx+10">
+    <div v-for="(item, idx) in summary" :key="idx">
       - {{ item }}
     </div>
   </ProtectedRoute>

@@ -1,9 +1,7 @@
-import createOpenApiClient, { type HeadersOptions } from 'openapi-fetch'
+import createOpenApiClient from 'openapi-fetch'
 
 import type { paths } from '@api/core'
 import type { EntriesListQuery } from '@api/types'
-
-import { ORIGIN } from '../lib/url'
 
 export const ACCESS_TOKEN = "access"
 export const REFRESH_TOKEN = "refresh"
@@ -37,29 +35,17 @@ const handleResponse = async <T>({
   return data as Exclude<T, undefined>
 }
 
-const getExtraHeaders = () => {
-  const token = localStorage.getItem(ACCESS_TOKEN)
-  let extraHeaders: HeadersOptions | undefined
-  if (token) {
-    extraHeaders = {
-      'Authorization': `Bearer ${token}`
-    }
-  }
-  return extraHeaders
-}
-
 export class RestClient {
   private static instance: RestClient
 
   private readonly _client: ReturnType<typeof createOpenApiClient<paths>>
 
-  // private extraHeaders = getExtraHeaders()
-
   private constructor(apiPrefix: string = '') {
-    const clientUrl = new URL(apiPrefix, ORIGIN).href
+    const clientUrl = new URL(apiPrefix, import.meta.env.VITE_API_URL).href
+
     this._client = createOpenApiClient<paths>({
       baseUrl: clientUrl,
-      headers: this.extraHeaders
+      headers: this.authHeaders
     })
   }
 
@@ -70,8 +56,13 @@ export class RestClient {
     return RestClient.instance
   }
 
-  get extraHeaders() {
-    return getExtraHeaders()
+  get authHeaders() {
+    const token = localStorage.getItem(ACCESS_TOKEN)
+    if (token) {
+      return {
+        'Authorization': `Bearer ${token}`
+      }
+    }
   }
 
   async registerUser(username: string, password: string) {
@@ -108,7 +99,7 @@ export class RestClient {
       // TODO
       // @ts-expect-error fix
       body: { refresh },
-      headers: this.extraHeaders
+      headers: this.authHeaders
     })
     .then(handleResponse)
     .catch((err: Error) => {
@@ -122,7 +113,7 @@ export class RestClient {
       "/api/entries",
       {
         params: { query: { ...query, page } },
-        headers: this.extraHeaders
+        headers: this.authHeaders
       }
     )
     .then(handleResponse)
@@ -137,7 +128,7 @@ export class RestClient {
       "/api/habits",
       {
         params: { query: { userId, page } },
-        headers: this.extraHeaders
+        headers: this.authHeaders
       },
     )
     .then(handleResponse)
@@ -150,7 +141,7 @@ export class RestClient {
   async whoAmI() {
     return this._client.GET(
       '/api/whoami/',
-      { headers: this.extraHeaders }
+      { headers: this.authHeaders }
     )
     .then(handleResponse)
     .catch((err: Error) => {

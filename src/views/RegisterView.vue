@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ClientSingleton from '@/clients'
+import { RestClientSingleton } from '@/clients'
 import router from '@/router'
 import { onBeforeMount, ref } from 'vue'
 
@@ -9,7 +9,7 @@ const password = ref<string | undefined>()
 const handleSubmit = async () => {
   if (username.value?.trim() && password.value) {
     try {
-      await ClientSingleton.registerUser(username.value?.trim(), password.value)
+      await RestClientSingleton.registerUser(username.value?.trim(), password.value)
       router.push('/login')
     } catch (error) {
       alert(error)

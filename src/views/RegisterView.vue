@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import api from '@/clients/api'
+import ClientSingleton from '@/clients'
 import router from '@/router'
 import { onBeforeMount, ref } from 'vue'
 
@@ -9,10 +9,7 @@ const password = ref<string | undefined>()
 const handleSubmit = async () => {
   if (username.value?.trim() && password.value) {
     try {
-      await api.post(
-        '/api/user/register/',
-        { username: username.value?.trim(), password: password.value }
-      )
+      await ClientSingleton.registerUser(username.value?.trim(), password.value)
       router.push('/login')
     } catch (error) {
       alert(error)

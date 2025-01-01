@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import api from '@/clients/api';
-import ProtectedRoute from '@/components/ProtectedRoute.vue';
-import { useUserStore } from '@/stores/user';
-import { onMounted, ref } from 'vue';
+import ClientSingleton from '@/clients';
+import ProtectedRoute from '@/components/ProtectedRoute.vue'
+import { useUserStore } from '@/stores/user'
+import type { Habit } from '@api/types';
+import { onMounted, ref } from 'vue'
 
-const habits = ref<{id: string; name: string}[]>([])
+const habits = ref<Habit[]>([])
 const userStore = useUserStore()
 const summary = ref([])
 
-const getQuery = (author: string) => `{\n  habits(author: ${author}) {\n    id\n    name\n    goalTimespan\n    goalType\n    goalFrequency\n    entries {\n      id\n      date\n      description\n    }\n  }\n}`
+// const getQuery = (author: string) => `{\n  habits(author: ${author}) {\n    id\n    name\n    goalTimespan\n    goalType\n    goalFrequency\n    entries {\n      id\n      date\n      description\n    }\n  }\n}`
 
 onMounted(async () => {
   const user = await userStore.getUser()
@@ -16,11 +17,12 @@ onMounted(async () => {
     return
   }
   
-  // const nextHabits = await api.get(`/api/habits?userId=${user.id}`)
-  // habits.value = nextHabits.data.results
+  ClientSingleton.getHabits(user.id).then(({results}) => {
+    habits.value = results
+  })
 
-  const userHabits = await api.post('/api/summary', { query: getQuery(user.id) })
-  summary.value = userHabits.data.data.habits
+  // const userHabits = await api.post('/api/summary', { query: getQuery(user.id) })
+  // summary.value = userHabits.data.data.habits
 })
 </script>
 

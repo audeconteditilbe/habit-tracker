@@ -1,7 +1,7 @@
 <script setup lang="ts">
-
+import ClientSingleton from '@/clients'
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/clients/RestClient'
 import { jwtDecode } from 'jwt-decode'
-import api, { ACCESS_TOKEN, REFRESH_TOKEN } from '../clients/api'
 import { onBeforeMount, ref } from 'vue'
 
 const isAuthorized = ref<boolean | undefined>(undefined)
@@ -26,16 +26,15 @@ const auth = async () => {
 
 const refreshToken = async () => {
   const refreshToken = localStorage.getItem(REFRESH_TOKEN)
+  if (!refreshToken) {
+    console.log('unable to find refresh token in local storage')
+    isAuthorized.value = false
+    return
+  }
   try {
-    const res = await api.post("/api/token/refresh/", { refresh: refreshToken })
-    
-    if (res.status === 200) {
-      localStorage.setItem(ACCESS_TOKEN, res.data.access)
-      isAuthorized.value = true
-    } else {
-      isAuthorized.value = false
-    }
-
+    const res = await ClientSingleton.refreshToken(refreshToken)
+    localStorage.setItem(ACCESS_TOKEN, res.access)
+    isAuthorized.value = true
   } catch (error) {
     console.log(error)
     isAuthorized.value = false

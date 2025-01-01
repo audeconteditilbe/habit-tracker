@@ -18,7 +18,7 @@ const commentHeader = `/**
 `
 const main = async () => {
   const inputPath = path.resolve(root, 'schemas', 'core.openapi.yml')
-  const outputPath = path.resolve(root, 'types', 'core.d.ts')
+  const outputPath = path.resolve(root, 'types', 'rest-api.d.ts')
 
   const schema = await fs
     .readFile(inputPath, 'utf8')

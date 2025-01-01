@@ -1,21 +1,40 @@
 import { ApolloClient, InMemoryCache, gql, type NormalizedCacheObject } from "@apollo/client/core"
 import { ACCESS_TOKEN, UnhandledError } from "./RestClient"
+import type { SummaryHabit } from "@api/types"
 
-export const buildSummaryQuery = (author: string, span?: number) => gql`{
-  habits(author: ${author}) {
-    id
-    name
-    goalTimespan
-    goalType
-    goalFrequency
-    entries(span: ${span}) {
+export const buildSummaryQuery = (author: string, span?: number) => span
+  ? gql`{
+    habits(author: ${author}) {
       id
-      date
-      description
+      name
+      private
+      goalTimespan
+      goalType
+      goalFrequency
+      entries (span: ${span}) {
+        id
+        date
+        description
+      }
     }
   }
-}
-`
+  `
+  : gql`{
+    habits(author: ${author}) {
+      id
+      name
+      private
+      goalTimespan
+      goalType
+      goalFrequency
+      entries {
+        id
+        date
+        description
+      }
+    }
+  }
+  `
 
 export class GqlClient {
   private static instance: GqlClient
@@ -24,7 +43,6 @@ export class GqlClient {
 
   private constructor(apiPrefix: string) {
     const clientUrl = new URL(apiPrefix, import.meta.env.VITE_API_URL).href
-    console.log(clientUrl)
     this._client = new ApolloClient({
       uri: clientUrl,
       cache: new InMemoryCache(),
@@ -48,25 +66,18 @@ export class GqlClient {
     return GqlClient.instance
   }
 
-  async getUserHabitSummary (author: string, span?: number) {
+  async getUserHabitSummary (author: string, span?: number): Promise<SummaryHabit[]> {
     const query = buildSummaryQuery(`${author}`, span)
-    console.log(query)
-    return this._client.query({
-      query,
-      // variables: pg !== undefined
-      //   ? { limit: 100, offset: pg * 100 }
-      //   : undefined
-    })
-      .then(({data, errors}) => {
+    return this._client.query({ query })
+      .then(({ data, errors }) => {
         if (errors && errors.length > 0) {
           return Promise.reject(new UnhandledError(JSON.stringify(errors)))
         }
-        return data
+        return (data as { habits: SummaryHabit[] }).habits
       })
       .catch((err) => {
         console.error('Error fetching user summary', err)
         return Promise.reject(new UnhandledError(err))
       })
   }
-
 }

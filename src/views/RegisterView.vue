@@ -18,7 +18,7 @@ const handleSubmit = async () => {
 }
 
 onBeforeMount(() => {
-  // TODO: just remove access & refresh tokens
+  // TODO: punctually remove access & refresh tokens only
   localStorage.clear()
 })
 

@@ -82,8 +82,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Takes a set of user credentials and returns an access and refresh JSON web
-         *     token pair to prove the authentication of those credentials. */
+        /** @description Retrieve the token. */
         post: operations["token_create"];
         delete?: never;
         options?: never;
@@ -100,8 +99,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Takes a refresh type JSON web token and returns an access type JSON web
-         *     token if the refresh token is valid. */
+        /** @description Retrieve a new access token. */
         post: operations["token_refresh_create"];
         delete?: never;
         options?: never;
@@ -161,6 +159,16 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        CreateUser: {
+            /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
+            username: string;
+            /**
+             * Email address
+             * Format: email
+             */
+            email?: string;
+            password: string;
+        };
         Entry: {
             readonly id: number;
             habit: number;
@@ -186,10 +194,10 @@ export interface components {
             private?: boolean;
             status?: components["schemas"]["StatusEnum"];
             /** Format: int64 */
-            goal_frequency: number;
+            goalFrequency: number;
             /** Format: int64 */
-            goal_timespan: number;
-            goal_type: components["schemas"]["GoalTypeEnum"];
+            goalTimespan: number;
+            goalType: components["schemas"]["GoalTypeEnum"];
         };
         PaginatedEntryList: {
             /** @example 123 */
@@ -238,11 +246,12 @@ export interface components {
             readonly access: string;
             refresh: string;
         };
-        User: {
-            readonly id: number;
-            /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
+        WrapperTokenObtainPair: {
             username: string;
             password: string;
+        };
+        WrapperTokenRefresh: {
+            refresh: string;
         };
     };
     responses: never;
@@ -261,9 +270,9 @@ export interface operations {
                 /** @description A page number within the paginated result set. */
                 page?: number;
                 /** @description End date for filtering entries in ISO 8601 format. Defaults to the current time. */
-                time_end?: string;
-                /** @description Start date for filtering entries in ISO 8601 format. Defaults to 7 days before `time_end`. */
-                time_start?: string;
+                timeEnd?: string;
+                /** @description Start date for filtering entries in ISO 8601 format. Defaults to 7 days before `timeEnd`. */
+                timeStart?: string;
             };
             header?: never;
             path?: never;
@@ -484,9 +493,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["TokenObtainPair"];
-                "application/x-www-form-urlencoded": components["schemas"]["TokenObtainPair"];
-                "multipart/form-data": components["schemas"]["TokenObtainPair"];
+                "application/json": components["schemas"]["WrapperTokenObtainPair"];
+                "application/x-www-form-urlencoded": components["schemas"]["WrapperTokenObtainPair"];
+                "multipart/form-data": components["schemas"]["WrapperTokenObtainPair"];
             };
         };
         responses: {
@@ -509,9 +518,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["TokenRefresh"];
-                "application/x-www-form-urlencoded": components["schemas"]["TokenRefresh"];
-                "multipart/form-data": components["schemas"]["TokenRefresh"];
+                "application/json": components["schemas"]["WrapperTokenRefresh"];
+                "application/x-www-form-urlencoded": components["schemas"]["WrapperTokenRefresh"];
+                "multipart/form-data": components["schemas"]["WrapperTokenRefresh"];
             };
         };
         responses: {
@@ -534,9 +543,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["User"];
-                "application/x-www-form-urlencoded": components["schemas"]["User"];
-                "multipart/form-data": components["schemas"]["User"];
+                "application/json": components["schemas"]["CreateUser"];
+                "application/x-www-form-urlencoded": components["schemas"]["CreateUser"];
+                "multipart/form-data": components["schemas"]["CreateUser"];
             };
         };
         responses: {
@@ -545,7 +554,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["User"];
+                    "application/json": components["schemas"]["CreateUser"];
                 };
             };
         };

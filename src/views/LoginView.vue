@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import RestClientSingleton from '@/clients'
+import { RestClientSingleton } from '@/clients'
 import router from '@/router'
 import { onBeforeMount, ref } from 'vue'
 
@@ -18,7 +18,7 @@ const handleSubmit = async () => {
 }
 
 onBeforeMount(() => {
-  // TODO: punctually remove access & refresh tokens
+  // TODO: punctually remove access & refresh tokens only
   localStorage.clear()
 })
 

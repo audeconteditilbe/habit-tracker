@@ -27,7 +27,7 @@ const auth = async () => {
 const refreshToken = async () => {
   const refreshToken = localStorage.getItem(REFRESH_TOKEN)
   if (!refreshToken) {
-    console.log('unable to find refresh token in local storage')
+    console.warn('unable to find refresh token in local storage')
     isAuthorized.value = false
     return
   }
@@ -36,7 +36,7 @@ const refreshToken = async () => {
     localStorage.setItem(ACCESS_TOKEN, res.access)
     isAuthorized.value = true
   } catch (error) {
-    console.log(error)
+    console.error('Error refreshing token', error)
     isAuthorized.value = false
   }
 }

@@ -1,7 +1,7 @@
 import createOpenApiClient from 'openapi-fetch'
 
-import type { paths } from '@api/core'
 import type { EntriesListQuery } from '@api/types'
+import type { paths } from '@api/rest-api'
 
 export const ACCESS_TOKEN = "access"
 export const REFRESH_TOKEN = "refresh"
@@ -65,11 +65,9 @@ export class RestClient {
     }
   }
 
-  async registerUser(username: string, password: string) {
+  async registerUser(username: string, password: string, email?: string) {
     return this._client.POST('/api/user/register/', {
-      // TODO
-      // @ts-expect-error fix
-      body: { username, password },
+      body: { username, password, email  },
     })
     .then(handleResponse)
     .catch((err: Error) => {
@@ -79,8 +77,6 @@ export class RestClient {
   }
   async login(username: string, password: string) {
     return this._client.POST('/api/token/', {
-      // TODO
-      // @ts-expect-error fix
       body: { username, password },
     })
     .then(handleResponse)
@@ -96,8 +92,6 @@ export class RestClient {
 
   async refreshToken(refresh: string) {
     return this._client.POST('/api/token/refresh/', {
-      // TODO
-      // @ts-expect-error fix
       body: { refresh },
       headers: this.authHeaders
     })

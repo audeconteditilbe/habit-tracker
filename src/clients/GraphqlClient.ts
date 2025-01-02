@@ -1,6 +1,7 @@
-import { ApolloClient, InMemoryCache, gql, type NormalizedCacheObject } from "@apollo/client/core"
-import { ACCESS_TOKEN, UnhandledError } from "./RestClient"
+import { ApolloClient, HttpLink, InMemoryCache, gql, type NormalizedCacheObject } from "@apollo/client/core"
+import { UnhandledError } from "./RestClient"
 import type { SummaryHabit } from "@api/types"
+import { accessTokenService } from "@/lib/auth"
 
 export const buildSummaryQuery = (author: string, span?: number) => span
   ? gql`{
@@ -43,21 +44,34 @@ export class GqlClient {
 
   private constructor(apiPrefix: string) {
     const clientUrl = new URL(apiPrefix, import.meta.env.VITE_API_URL).href
-    this._client = new ApolloClient({
+
+    const httpLink = new HttpLink({
       uri: clientUrl,
-      cache: new InMemoryCache(),
-      headers: this.authHeaders
+      fetch: (uri, options) => {
+        const token = accessTokenService.getToken()
+          if (token) {
+            options = {
+              ...options,
+              headers: {
+                ...options?.headers,
+                Authorization: `Bearer ${token}`,
+              }
+            }
+          }
+          return fetch(uri, options)
+      },
     })
+    this._client = new ApolloClient({ link: httpLink, cache: new InMemoryCache() })
   }
 
-  get authHeaders() {
-      const token = localStorage.getItem(ACCESS_TOKEN)
-      if (token) {
-        return {
-          'Authorization': `Bearer ${token}`
-        }
-      }
-    }
+  // get authHeaders() {
+  //     const token = accessTokenService.getToken()
+  //     if (token) {
+  //       return {
+  //         'Authorization': `Bearer ${token}`
+  //       }
+  //     }
+  //   }
 
   public static getInstance(apiPrefix: string): GqlClient {
     if (!GqlClient.instance) {

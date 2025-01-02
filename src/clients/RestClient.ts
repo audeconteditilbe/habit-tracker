@@ -2,9 +2,7 @@ import createOpenApiClient from 'openapi-fetch'
 
 import type { EntriesListQuery } from '@api/types'
 import type { paths } from '@api/rest-api'
-
-export const ACCESS_TOKEN = "access"
-export const REFRESH_TOKEN = "refresh"
+import { accessTokenService, refreshTokenService } from '@/lib/auth'
 
 const NOT_FOUND_CODE = 404
 const UNPROCESSABLE_CODE = 422
@@ -57,7 +55,7 @@ export class RestClient {
   }
 
   get authHeaders() {
-    const token = localStorage.getItem(ACCESS_TOKEN)
+    const token = accessTokenService.getToken()
     if (token) {
       return {
         'Authorization': `Bearer ${token}`
@@ -81,8 +79,8 @@ export class RestClient {
     })
     .then(handleResponse)
     .then(({ access, refresh }) => {
-      localStorage.setItem(ACCESS_TOKEN, access)
-      localStorage.setItem(REFRESH_TOKEN, refresh)
+      accessTokenService.setToken(access)
+      refreshTokenService.setToken(refresh)
     })
     .catch((err: Error) => {
       console.error('Error logging user in', err)

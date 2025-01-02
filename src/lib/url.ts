@@ -1,0 +1,1 @@
+export const normalizeUrl = (url: string) => new URL(url, window.location.origin).pathname

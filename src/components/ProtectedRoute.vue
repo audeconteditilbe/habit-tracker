@@ -1,18 +1,20 @@
 <script setup lang="ts">
-
+import {RestClientSingleton} from '@/clients'
+import { accessTokenService, refreshTokenService } from '@/lib/auth'
 import { jwtDecode } from 'jwt-decode'
-import api, { ACCESS_TOKEN, REFRESH_TOKEN } from '../clients/api'
 import { onBeforeMount, ref } from 'vue'
 
 const isAuthorized = ref<boolean | undefined>(undefined)
 
 const auth = async () => {
-  const token = localStorage.getItem(ACCESS_TOKEN)
+  const token = accessTokenService.getToken()
   
   if (!token) {
     isAuthorized.value = false
     return
   }
+  
+  // TODO set timeout to refresh token automatically after expiration
   const decoded = jwtDecode(token)
   const tokenExpiration = decoded.exp
   const now = Date.now() / 1000
@@ -25,19 +27,18 @@ const auth = async () => {
 }
 
 const refreshToken = async () => {
-  const refreshToken = localStorage.getItem(REFRESH_TOKEN)
+  const refreshToken = refreshTokenService.getToken()
+  if (!refreshToken) {
+    console.warn('unable to find refresh token in local storage')
+    isAuthorized.value = false
+    return
+  }
   try {
-    const res = await api.post("/api/token/refresh/", { refresh: refreshToken })
-    
-    if (res.status === 200) {
-      localStorage.setItem(ACCESS_TOKEN, res.data.access)
-      isAuthorized.value = true
-    } else {
-      isAuthorized.value = false
-    }
-
+    const res = await RestClientSingleton.refreshToken(refreshToken)
+    accessTokenService.setToken(res.access)
+    isAuthorized.value = true
   } catch (error) {
-    console.log(error)
+    console.error('Error refreshing token', error)
     isAuthorized.value = false
   }
 }

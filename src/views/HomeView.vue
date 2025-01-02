@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import api from '@/clients/api';
+import { GqlClientSingleton } from '@/clients';
 import ProtectedRoute from '@/components/ProtectedRoute.vue';
 import { useUserStore } from '@/stores/user';
+import type { SummaryHabit } from '@api/types';
 import { onMounted, ref } from 'vue';
 
-const habits = ref<{id: string; name: string}[]>([])
 const userStore = useUserStore()
+const summary = ref<SummaryHabit[]>([])
 
 onMounted(async () => {
   const user = await userStore.getUser()
@@ -13,16 +14,14 @@ onMounted(async () => {
     return
   }
   
-  const nextHabits = await api.get(`/api/habits?userId=${user.id}`)
-  habits.value = nextHabits.data.results
-
+  summary.value = await GqlClientSingleton.getUserHabitSummary(user.id)
 })
 </script>
 
 <template>
   <ProtectedRoute>
-    <div v-for="habit in habits" :key="habit.id">
-      - {{ habit.name }}
+    <div v-for="item in summary" :key="item.id">
+      {{ item }}
     </div>
   </ProtectedRoute>
 </template>

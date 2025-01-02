@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
+    "build:rest-types": "TS_NODE_PROJECT=./tsconfig.scripts.json node --loader=ts-node/esm scripts/build-rest-types.ts",
+    "build:code": "run-p type-check \"build-only {@}\" --",
+    "build": "run-p 'build:rest-types' 'build:code'",
     "preview": "vite preview",
     "test:unit": "vitest",
     "test:e2e": "playwright test",
@@ -14,8 +16,11 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
+    "@apollo/client": "^3.12.4",
     "axios": "^1.7.9",
+    "graphql": "^16.10.0",
     "jwt-decode": "^4.0.0",
+    "openapi-fetch": "^0.13.3",
     "pinia": "^2.3.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
@@ -37,12 +42,14 @@
     "json-schema-to-typescript": "^15.0.3",
     "json-server": "^1.0.0-beta.3",
     "npm-run-all2": "^7.0.2",
+    "openapi-typescript": "^7.4.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
     "vite": "^6.0.5",
     "vite-plugin-vue-devtools": "^7.6.8",
     "vitest": "^2.1.8",
-    "vue-tsc": "^2.1.10"
+    "vue-tsc": "^2.1.10",
+    "yaml": "^2.7.0"
   },
   "packageManager": "yarn@4.5.3"
 }

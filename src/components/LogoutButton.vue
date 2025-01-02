@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { accessTokenService, refreshTokenService } from '@/lib/auth';
 import router from '@/router';
 import { useUserStore } from '@/stores/user'
 
 const userStore = useUserStore()
 
 const onClick = () => {
-  localStorage.clear()
+  accessTokenService.clearToken()
+  refreshTokenService.clearToken()
   userStore.clearUser()
   router.push('/login')
 }

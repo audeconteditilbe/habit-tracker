@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import api from '@/clients/api'
+import { RestClientSingleton } from '@/clients'
+import { accessTokenService, refreshTokenService } from '@/lib/auth'
 import router from '@/router'
 import { onBeforeMount, ref } from 'vue'
 
@@ -9,10 +10,7 @@ const password = ref<string | undefined>()
 const handleSubmit = async () => {
   if (username.value?.trim() && password.value) {
     try {
-      await api.post(
-        '/api/user/register/',
-        { username: username.value?.trim(), password: password.value }
-      )
+      await RestClientSingleton.registerUser(username.value?.trim(), password.value)
       router.push('/login')
     } catch (error) {
       alert(error)
@@ -21,8 +19,9 @@ const handleSubmit = async () => {
 }
 
 onBeforeMount(() => {
-  // TODO: just remove access & refresh tokens
-  localStorage.clear()
+  // TODO: punctually remove access & refresh tokens only
+  accessTokenService.clearToken()
+  refreshTokenService.clearToken()
 })
 
 </script>

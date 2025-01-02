@@ -64,15 +64,6 @@ export class GqlClient {
     this._client = new ApolloClient({ link: httpLink, cache: new InMemoryCache() })
   }
 
-  // get authHeaders() {
-  //     const token = accessTokenService.getToken()
-  //     if (token) {
-  //       return {
-  //         'Authorization': `Bearer ${token}`
-  //       }
-  //     }
-  //   }
-
   public static getInstance(apiPrefix: string): GqlClient {
     if (!GqlClient.instance) {
       GqlClient.instance = new GqlClient(apiPrefix)

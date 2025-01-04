@@ -10,13 +10,17 @@ export type Entry = components['schemas']['Entry']
 
 export type SummaryHabit = (
   Pick<Habit, 
-    'id'
+    | 'id'
     | 'name'
     | 'private'
-    | 'goalTimespan'
-    | 'goalType'
+    | 'status'
+    | 'description'
     | 'goal'
+    | 'goalType'
+    | 'goalTimespan'
+    | 'goalFrom'
+    | 'goalTo'
   > & {
-    entries: Pick<Entry, 'id' | 'date' | 'description'>[]
+    entries: Pick<Entry, 'id' | 'date' | 'description' | 'rating'>[]
   }
 )

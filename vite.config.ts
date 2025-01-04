@@ -8,7 +8,11 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 export default defineConfig({
   base: './',
   plugins: [
-    vue(),
+    vue({
+      features: {
+        propsDestructure: true
+      }
+    }),
     vueDevTools(),
   ],
   resolve: {

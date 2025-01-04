@@ -15,7 +15,7 @@ export type SummaryHabit = (
     | 'private'
     | 'goalTimespan'
     | 'goalType'
-    | 'goalFrequency'
+    | 'goal'
   > & {
     entries: Pick<Entry, 'id' | 'date' | 'description'>[]
   }

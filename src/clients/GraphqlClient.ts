@@ -9,9 +9,11 @@ export const buildSummaryQuery = (author: string, span?: number) => span
       id
       name
       private
+      goal
       goalTimespan
       goalType
-      goalFrequency
+      goalFrom
+      goalTo
       entries (span: ${span}) {
         id
         date
@@ -25,9 +27,11 @@ export const buildSummaryQuery = (author: string, span?: number) => span
       id
       name
       private
+      goal
       goalTimespan
       goalType
-      goalFrequency
+      goalFrom
+      goalTo
       entries {
         id
         date

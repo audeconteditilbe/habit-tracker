@@ -12,7 +12,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Retrieve a list of entries filtered by habit and date range. */
+        /** @description Retrieve entries filtered by habit and date range. */
         get: operations["entries_list"];
         put?: never;
         /** @description Create a new entry for a habit. */
@@ -159,6 +159,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @enum {unknown} */
+        BlankEnum: "";
         CreateUser: {
             /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
             username: string;
@@ -173,7 +175,7 @@ export interface components {
             readonly id: number;
             habit: number;
             /** Format: date-time */
-            readonly date: string;
+            date: string;
             rating?: number | null;
             description?: string | null;
         };
@@ -193,12 +195,16 @@ export interface components {
             description?: string | null;
             private?: boolean;
             status?: components["schemas"]["StatusEnum"];
-            /** Format: int64 */
-            goalFrequency: number;
-            /** Format: int64 */
-            goalTimespan: number;
-            goalType: components["schemas"]["GoalTypeEnum"];
+            goal?: number | null;
+            goalType?: (components["schemas"]["GoalTypeEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"]) | null;
+            goalTimespan?: number | null;
+            /** Format: date-time */
+            goalFrom?: string | null;
+            /** Format: date-time */
+            goalTo?: string | null;
         };
+        /** @enum {unknown} */
+        NullEnum: null;
         PaginatedEntryList: {
             /** @example 123 */
             count: number;
@@ -230,12 +236,12 @@ export interface components {
             results: components["schemas"]["Habit"][];
         };
         /**
-         * @description * `active` - Active
-         *     * `paused` - Paused
-         *     * `deleted` - Deleted
+         * @description * `0` - Active
+         *     * `1` - Paused
+         *     * `2` - Deleted
          * @enum {string}
          */
-        StatusEnum: "active" | "paused" | "deleted";
+        StatusEnum: "0" | "1" | "2";
         TokenObtainPair: {
             username: string;
             password: string;
@@ -269,9 +275,9 @@ export interface operations {
                 habitId: string;
                 /** @description A page number within the paginated result set. */
                 page?: number;
-                /** @description End date for filtering entries in ISO 8601 format. Defaults to the current time. */
+                /** @description End date for filtering entries in ISO format. Defaults to the current time. */
                 timeEnd?: string;
-                /** @description Start date for filtering entries in ISO 8601 format. Defaults to 7 days before `timeEnd`. */
+                /** @description Start date for filtering entries in ISO format. Defaults to 7 days before `timeEnd`. */
                 timeStart?: string;
             };
             header?: never;

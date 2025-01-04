@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import {RestClientSingleton} from '@/clients'
 import { accessTokenService, refreshTokenService } from '@/lib/auth'
+import { useUserStore } from '@/stores/userStore'
 import { jwtDecode } from 'jwt-decode'
 import { onBeforeMount, ref } from 'vue'
+
+const userStore = useUserStore()
 
 const isAuthorized = ref<boolean | undefined>(undefined)
 
@@ -44,7 +47,14 @@ const refreshToken = async () => {
 }
 
 onBeforeMount(() => {
-  auth().catch(() => isAuthorized.value = false)
+  auth()
+  .catch(() => isAuthorized.value = false)
+  .finally(async () => {
+    if (isAuthorized.value) {
+      // fetch user info if the user is authorized
+      await userStore.fetchCurrentUser()
+    }
+  })
 })
 
 </script>

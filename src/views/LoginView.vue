@@ -2,24 +2,27 @@
 import { RestClientSingleton } from '@/clients'
 import { accessTokenService, refreshTokenService } from '@/lib/auth'
 import router from '@/router'
+import { useUserStore } from '@/stores/userStore'
 import { onBeforeMount, ref } from 'vue'
 
 const username = ref<string | undefined>()
 const password = ref<string | undefined>()
 
+const userStore = useUserStore()
+
 const handleSubmit = async () => {
   if (username.value?.trim() && password.value) {
     try {
       await RestClientSingleton.login(username.value?.trim(), password.value)
+      await userStore.fetchCurrentUser()
       router.push('/')
     } catch (error) {
-      alert(error)
+      console.error(error)
     }
   }
 }
 
 onBeforeMount(() => {
-  // TODO: punctually remove access & refresh tokens only
   accessTokenService.clearToken()
   refreshTokenService.clearToken()
 })

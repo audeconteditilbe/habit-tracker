@@ -1022,6 +1022,53 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@primeuix/styled@npm:^0.3.2":
+  version: 0.3.2
+  resolution: "@primeuix/styled@npm:0.3.2"
+  dependencies:
+    "@primeuix/utils": "npm:^0.3.2"
+  checksum: 10c0/e97b85095847084844e28fbb252cbfb2090be47fed88e36cd86e886cdf9bd88f1dafa60d407123eaa6503702158347e96c8199e1e38bcbf4f5d65eda5767f261
+  languageName: node
+  linkType: hard
+
+"@primeuix/utils@npm:^0.3.2":
+  version: 0.3.2
+  resolution: "@primeuix/utils@npm:0.3.2"
+  checksum: 10c0/3ada284a982519c4e3cae9ed83e17dbae9d6e505a16b699fa37d69ca14e46350076389f70ef3a5b1a359ba6a0891299a20ec4f9a6ed330ab3bbda7d227e9b84f
+  languageName: node
+  linkType: hard
+
+"@primevue/core@npm:4.2.5":
+  version: 4.2.5
+  resolution: "@primevue/core@npm:4.2.5"
+  dependencies:
+    "@primeuix/styled": "npm:^0.3.2"
+    "@primeuix/utils": "npm:^0.3.2"
+  peerDependencies:
+    vue: ^3.3.0
+  checksum: 10c0/36d73f72c83428b49c4cb49fe9af08230267bdf2d29cfc55f50f24d12873ef69f4f72fe8fc4c3df1544f72a0c313a4b855525960c31c87da0dfb71923ddde102
+  languageName: node
+  linkType: hard
+
+"@primevue/icons@npm:4.2.5":
+  version: 4.2.5
+  resolution: "@primevue/icons@npm:4.2.5"
+  dependencies:
+    "@primeuix/utils": "npm:^0.3.2"
+    "@primevue/core": "npm:4.2.5"
+  checksum: 10c0/1172434df09edbd9f090ab13eb5b4a6dfd7d8f413498a17f603b8e019a99c4ec4427a54620df270233f0648701a2346000102feb9f8c8a7bba83413d595a78d9
+  languageName: node
+  linkType: hard
+
+"@primevue/themes@npm:^4.2.5":
+  version: 4.2.5
+  resolution: "@primevue/themes@npm:4.2.5"
+  dependencies:
+    "@primeuix/styled": "npm:^0.3.2"
+  checksum: 10c0/df3d7a01161d97c053b2c46445a140823aaa8fe17ace7976ef4456b8be7c64a012e12b96be998eeb5157053e4d5eb098bd9419c86d558c66b47756f9f7350d76
+  languageName: node
+  linkType: hard
+
 "@redocly/ajv@npm:^8.11.2":
   version: 8.11.2
   resolution: "@redocly/ajv@npm:8.11.2"
@@ -3367,6 +3414,7 @@ __metadata:
   dependencies:
     "@apollo/client": "npm:^3.12.4"
     "@playwright/test": "npm:^1.49.1"
+    "@primevue/themes": "npm:^4.2.5"
     "@tsconfig/node22": "npm:^22.0.0"
     "@types/jsdom": "npm:^21.1.7"
     "@types/node": "npm:^22.10.2"
@@ -3388,6 +3436,7 @@ __metadata:
     openapi-fetch: "npm:^0.13.3"
     openapi-typescript: "npm:^7.4.4"
     pinia: "npm:^2.3.0"
+    primevue: "npm:^4.2.5"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.2"
     vite: "npm:^6.0.5"
@@ -4715,6 +4764,18 @@ __metadata:
   dependencies:
     parse-ms: "npm:^4.0.0"
   checksum: 10c0/ab6d066f90e9f77020426986e1b018369f41575674544c539aabec2e63a20fec01166d8cf6571d0e165ad11cfe5a8134a2a48a36d42ab291c59c6deca5264cbb
+  languageName: node
+  linkType: hard
+
+"primevue@npm:^4.2.5":
+  version: 4.2.5
+  resolution: "primevue@npm:4.2.5"
+  dependencies:
+    "@primeuix/styled": "npm:^0.3.2"
+    "@primeuix/utils": "npm:^0.3.2"
+    "@primevue/core": "npm:4.2.5"
+    "@primevue/icons": "npm:4.2.5"
+  checksum: 10c0/20de75b6dd4aa73d2fe23bcf52c48760081eafe0fa846fc73bd03235efcd106af816bfa5ba8cec974943070d60f8c38ca212de3433d585b2d565da5efb19d93c
   languageName: node
   linkType: hard
 

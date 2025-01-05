@@ -4,6 +4,7 @@ import Menubar from 'primevue/menubar'
 import type { MenuItem } from 'primevue/menuitem'
 import { useUserStore } from '@/stores/userStore'
 import { computed, onMounted, ref } from 'vue';
+import DarkModeButton from './DarkModeButton.vue';
 
 type MenuItemWithPath = MenuItem & { path: string }
 
@@ -35,10 +36,13 @@ onMounted(() => {
 })
 </script>
 
-<template>
-  <Menubar :model="items" />
+<template>    
+  <Menubar :model="items">
+    <template #start>
+      <img alt="Logo" class="logo" src="@/assets/logo-small.svg" width="32" height="32" />
+    </template>
+    <template #end>
+      <DarkModeButton />
+    </template>
+  </Menubar>
 </template>
-
-<style lang="css" scoped>
-
-</style>

@@ -180,14 +180,14 @@ export interface components {
             description?: string | null;
         };
         /**
-         * @description * `gt` - Greater than
-         *     * `gte` - Greater than or equal to
-         *     * `lt` - Less than
-         *     * `lte` - Less than or equal to
-         *     * `equal` - Equal to
+         * @description * `GT` - Greater than
+         *     * `GTE` - Greater than or equal to
+         *     * `LT` - Less than
+         *     * `LTE` - Less than or equal to
+         *     * `EQUAL` - Equal to
          * @enum {string}
          */
-        GoalTypeEnum: "gt" | "gte" | "lt" | "lte" | "equal";
+        GoalTypeEnum: "GT" | "GTE" | "LT" | "LTE" | "EQUAL";
         Habit: {
             readonly id: number;
             author: number;

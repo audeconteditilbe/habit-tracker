@@ -10,3 +10,9 @@ import BaseNavbar from '@/components/BaseNavbar.vue'
 
   <RouterView />
 </template>
+
+<style lang="css" scoped>
+header{
+  margin-bottom: var(--p-);
+}
+</style>

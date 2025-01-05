@@ -3436,6 +3436,7 @@ __metadata:
     openapi-fetch: "npm:^0.13.3"
     openapi-typescript: "npm:^7.4.4"
     pinia: "npm:^2.3.0"
+    primeicons: "npm:^7.0.0"
     primevue: "npm:^4.2.5"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.2"
@@ -4764,6 +4765,13 @@ __metadata:
   dependencies:
     parse-ms: "npm:^4.0.0"
   checksum: 10c0/ab6d066f90e9f77020426986e1b018369f41575674544c539aabec2e63a20fec01166d8cf6571d0e165ad11cfe5a8134a2a48a36d42ab291c59c6deca5264cbb
+  languageName: node
+  linkType: hard
+
+"primeicons@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "primeicons@npm:7.0.0"
+  checksum: 10c0/a7f6344d6db49e785d2040b35f8cae761d15bb8f8ee70ade8981d45438245414e913fe7235921122aade2b0a11a032c98b44dc527be2da11aa791ff145099c06
   languageName: node
   linkType: hard
 

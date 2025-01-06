@@ -79,6 +79,13 @@ const Preset = definePreset(Nora, {
       m: '0.75rem',
       l: '1rem',
       xl: '2rem',
+    },
+    gap: {
+      xs: '0.1rem',
+      s: '0.5rem',
+      m: '0.75rem',
+      l: '1rem',
+      xl: '2rem',
     }
   },
   // components: {

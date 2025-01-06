@@ -12,6 +12,7 @@ body {
 .subtle-text {
   color: var(--text-subtle);
   font-size: 0.9rem;
+  line-height: 1;
 }
 
 .ellipsable {

@@ -7,10 +7,7 @@
 }
 
 body {
-  min-height: 100vh;
-  padding: 1rem;
   line-height: 1.6;
-  background-color: var(--body-bg);
   font-family:
     Inter,
     -apple-system,
@@ -24,16 +21,8 @@ body {
     'Droid Sans',
     'Helvetica Neue',
     sans-serif;
-  font-size: 15px;
+  font-size: 1rem;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-:root {
-  --body-bg: var(--p-surface-50);
-}
-
-:root[class='dark-mode'] {
-  --body-bg: var(--p-surface-950);
 }

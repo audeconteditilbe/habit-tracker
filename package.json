@@ -19,6 +19,7 @@
     "@apollo/client": "^3.12.4",
     "@primevue/themes": "^4.2.5",
     "axios": "^1.7.9",
+    "dayjs": "^1.11.13",
     "graphql": "^16.10.0",
     "jwt-decode": "^4.0.0",
     "openapi-fetch": "^0.13.3",

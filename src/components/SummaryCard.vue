@@ -1,76 +1,30 @@
 <script setup lang="ts">
-import { formatDateFromISO } from '@/lib/date';
-import type { SummaryHabit } from '@api/types';
-import Card from 'primevue/card';
-import { computed } from 'vue';
-import EntriesCarousel from './EntriesCarousel.vue';
+import type { SummaryHabit } from '@api/types'
+import Card from 'primevue/card'
+import EntriesCarousel from './EntriesCarousel.vue'
+import GoalDescription from './GoalDescription.vue'
 
-const { habit } = defineProps<{ habit: SummaryHabit }>()
-
-const {
-  entries,
-  goal,
-  goalTimespan,
-  goalType,
-  goalFrom,
-  goalTo,
-  name,
-} = habit
-
-const goalMessage = computed(() => {
-  const messages = []
-  
-  if (goalFrom || goalTo) {
-    if (goalFrom) {
-      messages.push(`from ${formatDateFromISO(goalFrom)}`)
-    }
-    if (goalTo) {
-      messages.push(`until ${formatDateFromISO(goalTo)}`)
-    }
-  }
-
-  if (goal) {
-    switch (goalType) {
-      case 'GT':
-        messages.push(`more than ${goal} times`)
-        break
-      case 'GTE':
-        messages.push(`at least ${goal} times`)
-        break
-      case 'LT':
-        messages.push(`less than ${goal} times`)
-        break
-      case 'LTE':
-        messages.push(`at most ${goal} times`)
-        break
-      case 'EQUAL':
-        messages.push(`${goal} times`)
-        break
-    }
-    if (goalTimespan) {
-      messages.push(`every ${goalTimespan} days`)
-    }
-  }
-
-  return messages.join(' ')
-})
-
+const props = defineProps<{ habit: SummaryHabit }>()
 </script>
 
 <template>
   <Card>
-    <template #title>{{ name }}</template>
+    <template #title>{{ props.habit.name }}</template>
     <template #content>
-        <p class="m-0">
-          <span>{{ goalMessage }}</span>
-        </p>
-        <div class="">
-          <!-- {{
-            entries.map(({date}) => formatDateFromISO(date))
-          }} -->
-          <EntriesCarousel :entries="entries"/>
-        </div>
+        <GoalDescription
+          :goal="props.habit.goal"
+          :goalTimespan="props.habit.goalTimespan"
+          :goalType="props.habit.goalType"
+          :goalFrom="props.habit.goalFrom"
+          :goalTo="props.habit.goalTo"
+        />
+        <EntriesCarousel class="entries-carousel" :entries="props.habit.entries"/>
     </template>
   </Card>
 </template>
 
+<style lang="css" scoped>
+.entries-carousel {
+  padding: var(--p-padding-l);
+}
+</style>

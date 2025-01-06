@@ -12,7 +12,7 @@ import BaseNavbar from '@/components/BaseNavbar.vue'
 </template>
 
 <style lang="css" scoped>
-header{
-  margin-bottom: var(--p-);
+header {
+  margin-bottom: var(--p-margin-l);
 }
 </style>

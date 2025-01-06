@@ -15,8 +15,7 @@ watch(
     if (!userStore.user) {
       return
     }
-    
-    summary.value = await GqlClientSingleton.getUserHabitSummary(userStore.user.id)
+    summary.value = (await GqlClientSingleton.getUserHabitSummary(userStore.user.id))
   }
 )
 </script>
@@ -33,6 +32,6 @@ watch(
 .cards {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--p-gap-m);
 }
 </style>

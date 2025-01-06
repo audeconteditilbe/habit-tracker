@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import dayjs, { daysAgo, daysBetween, formatDate, now } from '@/lib/date'
+import dayjs, { daysAgo, daysBetween, formatDate, humanReadableDate, now } from '@/lib/date'
 import { BREAKPOINT_SMALL } from '@/lib/ui'
 import type { SummaryHabit } from '@api/types'
 import Carousel, { type CarouselResponsiveOptions } from 'primevue/carousel'
@@ -10,7 +10,7 @@ type Props = Pick<SummaryHabit, 'entries'> & {
 }
 
 type SummaryDay = {
-  date: string,
+  date: dayjs.Dayjs,
   entryIds: number[]
 }
 
@@ -34,13 +34,15 @@ const datesWithEntries = computed<SummaryDay[]>(() =>
     .reverse()
     .map((date) => {
       return {
-        date: formatDate(date),
+        date,
         entryIds: entries
           .filter(({ date: entryDate }) => dayjs(entryDate).isSame(date, 'day'))
           .map(({ id }) => id)
       }
     })
 )
+
+
 
 const isLastPage = ref<boolean>(false)
 
@@ -69,11 +71,11 @@ const handlePageChange = (page: number) => {
       <div class="entry-item" :title="formatDate((slotProps.data as SummaryDay).date)">
         <i
           v-if="(slotProps.data as SummaryDay).entryIds.length > 0"
-          class="pi pi-check"
+          class="pi pi-circle-fill"
           style="color: var(--success-color)"
         />
         <i v-else class="pi pi-circle" style="color: var(--error-color)" />
-        <span>{{dayjs((slotProps.data as SummaryDay).date).fromNow()}}</span>
+        <span>{{humanReadableDate((slotProps.data as SummaryDay).date)}}</span>
       </div>
     </template>
   </Carousel>

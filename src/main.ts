@@ -88,18 +88,22 @@ const Preset = definePreset(Nora, {
       xl: '2rem',
     }
   },
-  // components: {
-  //   card: {
-  //     colorScheme: {
-  //       light: {
-  //         background: '{surface.100}'
-  //       },
-  //       dark: {
-  //         background: '{surface.900}'
-  //       }
-  //     }
-  //   }
-  // }
+  components: {
+    card: {
+      colorScheme: {
+        light: {
+          background: '{surface.100}'
+        },
+        dark: {
+          background: '{surface.900}'
+        }
+      }
+    },
+    progressbar: {
+      height: '0.5rem'
+    }
+
+  }
 })
 
 app.use(PrimeVue, {

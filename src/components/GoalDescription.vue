@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { formatDate } from '@/lib/date'
+import { countDays, findDateBucket, formatDate, now } from '@/lib/date'
 import type { SummaryHabit } from '@api/types'
+import ProgressBar from 'primevue/progressbar'
 import { computed } from 'vue'
 
 const { 
@@ -49,44 +50,71 @@ const goalMessage = computed(() => {
 
   return messages.join(' ')
 })
+
+const progress = computed(() => {
+  if (goalFrom && goalTo) {
+    const tot = countDays(goalFrom, goalTo)
+    const fromToday = countDays(goalFrom, now())
+    if (tot && fromToday) {
+      return Math.ceil((fromToday / tot) * 100)
+    }
+  }
+  return 0
+})
+
+// const currentStreak = computed(() => {
+//   if (goal && goalFrom && goalTo && goalTimespan) {
+//     const currentTimespan = findDateBucket(goalFrom, goalTo, goalTimespan, goal)
+    
+//     if (currentTimespan) {
+//       const [timespanStart, timespanEnd] = currentTimespan
+
+//     }
+//   }
+
+//   return 0
+// })
 </script>
 
 <template>
   <div v-if="goalFrom || goalTo || goalMessage" class="container">
-    <i class="pi pi-bullseye" />
-    <div class="details">
-      <div class="from-to">
-        <span v-if="goalFrom" class="subtle-text ellipsable">{{ formatDate(goalFrom) }}</span>
-        <!-- TODO: adjust size -->
-        <i
-        v-if="Boolean(goalFrom) && Boolean(goalTo)"
-        class="pi pi-arrow-right subtle-text"
-        style="font-size: 0.5rem;"
-        />
-        <span v-if="goalTo" class="subtle-text ellipsable">{{ formatDate(goalTo) }}</span>
-      </div>
-      <span v-if="goalMessage" class="subtle-text ellipsable">{{ goalMessage }}</span>
+    
+    <div v-if="goalFrom && goalTo" class="details-row">
+      <span class="subtle-text ellipsable">{{ formatDate(goalFrom) }}</span>
+      <ProgressBar class="progressbar" :value="progress" :show-value="false"/>
+      <span class="subtle-text ellipsable">{{ formatDate(goalTo) }}</span>
     </div>
+    <span v-else-if="goalFrom" class="subtle-text ellipsable">
+      Started on: {{ formatDate(goalFrom) }}
+    </span>
+    <span v-else-if="goalTo" class="subtle-text ellipsable">
+      Ends on: {{ formatDate(goalTo) }}
+    </span>
+    
+    <div v-if="goalMessage" class="details-row">
+      <i class="pi pi-bullseye" />
+      <span class="subtle-text ellipsable">{{ goalMessage }}</span>
+    </div>
+
   </div>
 </template>
 
 <style lang="css" scoped>
 .container {
   display: flex;
-  align-items: center;
-  gap: var(--p-gap-s);
-}
-
-.details {
-  display: flex;
   flex-direction: column;
-  gap: var(--p-gap-xs);
+  gap: var(--p-gap-s);
+  flex-grow: 1;
 
-  .from-to {
+  .details-row {
     display: flex;
     flex-direction: row;
-    gap: var(--p-gap-s);
     align-items: center;
+    gap: var(--p-gap-s);
+
+    .progressbar {
+      flex-grow: 1;
+    }
   }
 }
 </style>

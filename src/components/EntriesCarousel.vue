@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import dayjs, { daysAgo, daysBetween, formatDate, humanReadableDate, now } from '@/lib/date'
+import dayjs, { daysAgo, listDaysBetween, formatDate, humanReadableDate, now } from '@/lib/date'
 import { BREAKPOINT_SMALL } from '@/lib/ui'
 import type { SummaryHabit } from '@api/types'
 import Carousel, { type CarouselResponsiveOptions } from 'primevue/carousel'
@@ -30,7 +30,7 @@ const responsiveOptions = ref<CarouselResponsiveOptions[]>([
 ])
 
 const datesWithEntries = computed<SummaryDay[]>(() => 
-  daysBetween(daysAgo(timespan - 1), now())
+  listDaysBetween(daysAgo(timespan - 1), now())
     .reverse()
     .map((date) => {
       return {

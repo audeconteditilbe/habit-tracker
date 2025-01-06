@@ -6,12 +6,9 @@
   --body-bg: var(--p-surface-100);
   --text-subtle: var(--p-zinc-500);
   --error-color: var(--p-red-500);
-  --success-color: var(--p-lime-500);
+  --success-color: var(--p-emerald-500);
 }
 
 :root[class='dark-mode'] {
   --body-bg: var(--p-surface-950);
-  --text-subtle: var(--p-zinc-500);
-  --error-color: var(--p-red-500);
-  --success-color: var(--p-lime-500);
 }

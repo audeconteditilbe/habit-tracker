@@ -4,7 +4,7 @@ import localizedFormat from 'dayjs/plugin/localizedFormat'
 import calendar from 'dayjs/plugin/calendar'
 // import updateLocale from 'dayjs/plugin/updateLocale'
 
-import type { Valid } from './utils'
+import { findBucket, type Valid } from './utils'
 
 type Datable = Valid<ConfigType>
 
@@ -72,7 +72,16 @@ export const daysForward = (span: number, start: Datable = new Date()): Dayjs =>
   return dayjs(start).add(span, 'day')
 }
 
-export const daysBetween = (start: Datable, end: Datable): Dayjs[] => {
+export const countDays = (start: Datable, end: Datable): number | null => {
+  start = dayjs(start)
+  end = dayjs(end)
+  if (start > end) {
+    return null
+  }
+  return dayjs(start).diff(end, 'day')
+}
+
+export const listDaysBetween = (start: Datable, end: Datable): Dayjs[] => {
   const dates: Dayjs[] = []
 
   const startDate = dayjs(start).startOf('day')
@@ -90,4 +99,33 @@ export const daysBetween = (start: Datable, end: Datable): Dayjs[] => {
   
   // dates.push(endDate)
   return dates
+}
+
+/**
+ * Of ranges that are obtained by splitting the days from start to finish into non
+ * overlapping buckets of size bucketSize, returns the one containing today's date
+ * if any, else null.
+ */
+export const findDateBucket = (
+  start: Datable,
+  end: Datable,
+  bucketSize: number,
+  target: Datable = now()
+): [Dayjs, Dayjs] | null => {
+  const startDate = dayjs(start)
+  const endDate = dayjs(end)
+  const targetDate = dayjs(target)
+
+  const daysFromStartToEnd = endDate.diff(startDate, 'day')
+  const daysFromStartToTarget = targetDate.diff(startDate, 'day')
+  const bucket = findBucket(0, daysFromStartToEnd, bucketSize,  daysFromStartToTarget)
+
+  if (bucket.length === 0) {
+    return null
+  }
+
+  return [
+    startDate.add(bucket[0], 'day'),
+    startDate.add(bucket[1], 'day'),
+  ]
 }

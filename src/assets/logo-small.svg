@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" fill="none">
+  <!-- Simplified background circle -->
+  <circle cx="100" cy="100" r="95" fill="#ffefd5" stroke="#ff4500" stroke-width="5"/>
+
+  <!-- Enlarged scribble for carefree vibe -->
+  <path d="M80 100 q20 -20 30 0 q10 15 -20 25 q-10 10 0 25 q20 25 -10 15 q-30 -10 -20 -40 q10 -30 -10 -40" 
+        stroke="#1e90ff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

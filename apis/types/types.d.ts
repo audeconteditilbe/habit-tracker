@@ -8,6 +8,9 @@ export type EntriesListQuery = Omit<
 export type Habit = components['schemas']['Habit']
 export type Entry = components['schemas']['Entry']
 
+// TODO: update schema with response of GET to `/whoami`
+export type User = { id: string; username: string; email?: string }
+
 export type SummaryHabit = (
   Pick<Habit, 
     | 'id'

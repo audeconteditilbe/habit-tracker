@@ -1,35 +1,30 @@
 <script setup lang="ts">
-import type { SummaryHabit } from '@api/types';
+import type { SummaryHabit } from '@api/types'
+import Card from 'primevue/card'
+import EntriesCarousel from './EntriesCarousel.vue'
+import GoalDescription from './GoalDescription.vue'
 
-const {
-  habit
-} = defineProps<{ habit: SummaryHabit }>()
-
-const {
-  entries,
-  goal,
-  goalTimespan,
-  goalType,
-  name,
-} = habit
-
+const props = defineProps<{ habit: SummaryHabit }>()
 </script>
 
 <template>
-  <div class="">
-    <h3>{{ name }}</h3>
-    
-    <div>
-      <span>{{ goal }}</span>
-      <span>{{ goalType }}</span>
-      <span>{{ goalTimespan }}</span>
-    </div>
-    
-    <div v-for="entry in entries" :key="entry.id">
-      {{ new Date(entry.date) }}
-    </div>
-  </div>
+  <Card>
+    <template #title>{{ props.habit.name }}</template>
+    <template #content>
+        <GoalDescription
+          :goal="props.habit.goal"
+          :goalTimespan="props.habit.goalTimespan"
+          :goalType="props.habit.goalType"
+          :goalFrom="props.habit.goalFrom"
+          :goalTo="props.habit.goalTo"
+        />
+        <EntriesCarousel class="entries-carousel" :entries="props.habit.entries"/>
+    </template>
+  </Card>
 </template>
 
-<style scoped>
+<style lang="css" scoped>
+.entries-carousel {
+  padding: var(--p-padding-l);
+}
 </style>

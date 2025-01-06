@@ -13,13 +13,12 @@ const handleSubmit = async () => {
       await RestClientSingleton.login(username.value?.trim(), password.value)
       router.push('/')
     } catch (error) {
-      alert(error)
+      console.error(error)
     }
   }
 }
 
 onBeforeMount(() => {
-  // TODO: punctually remove access & refresh tokens only
   accessTokenService.clearToken()
   refreshTokenService.clearToken()
 })

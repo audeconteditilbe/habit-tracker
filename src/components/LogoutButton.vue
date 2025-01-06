@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { accessTokenService, refreshTokenService } from '@/lib/auth';
 import router from '@/router';
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/userStore'
 
 const userStore = useUserStore()
 

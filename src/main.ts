@@ -89,20 +89,19 @@ const Preset = definePreset(Nora, {
     }
   },
   components: {
-    card: {
-      colorScheme: {
-        light: {
-          background: '{surface.100}'
-        },
-        dark: {
-          background: '{surface.900}'
-        }
-      }
-    },
+    // card: {
+    //   colorScheme: {
+    //     light: {
+    //       background: '{surface.100}'
+    //     },
+    //     dark: {
+    //       background: '{surface.900}'
+    //     }
+    //   }
+    // },
     progressbar: {
       height: '0.5rem'
     }
-
   }
 })
 

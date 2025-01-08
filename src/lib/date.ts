@@ -6,7 +6,7 @@ import calendar from 'dayjs/plugin/calendar'
 
 import { findBucket, type Valid } from './utils'
 
-type Datable = Valid<ConfigType>
+export type Dateble = Valid<ConfigType>
 
 /**
  * NOTE: dayjs should be imported from here for centralizing plugin extension
@@ -40,17 +40,17 @@ const LAST = 'Last'
 
 export const now = () => dayjs()
 
-export const isToday = (date: Datable) => dayjs(date).isSame(now(), 'day')
-export const isYesterday = (date: Datable) => dayjs(date).isSame(daysAgo(1), 'day')
-export const isThisWeek = (date: Datable) => dayjs(date).isSame(now(), 'week')
-export const isThisMonth = (date: Datable) => dayjs(date).isSame(now(), 'month')
-export const isThisYear = (date: Datable) => dayjs(date).isSame(now(), 'year')
+export const isToday = (date: Dateble) => dayjs(date).isSame(now(), 'day')
+export const isYesterday = (date: Dateble) => dayjs(date).isSame(daysAgo(1), 'day')
+export const isThisWeek = (date: Dateble) => dayjs(date).isSame(now(), 'week')
+export const isThisMonth = (date: Dateble) => dayjs(date).isSame(now(), 'month')
+export const isThisYear = (date: Dateble) => dayjs(date).isSame(now(), 'year')
 
-export const formatDate = (date: Datable) => {
+export const formatDate = (date: Dateble) => {
   return dayjs(date).format('L')//.toDate().toLocaleDateString()
 }
 
-export const humanReadableDate = (date: Datable) => {
+export const humanReadableDate = (date: Dateble) => {
   date = dayjs(date)
   
   return date.calendar(null, {
@@ -64,24 +64,25 @@ export const humanReadableDate = (date: Datable) => {
 }
 
 
-export const daysAgo = (span: number, start: Datable = new Date()): Dayjs => {
+export const daysAgo = (span: number, start: Dateble = new Date()): Dayjs => {
   return dayjs(start).add(-span, 'day')
 }
 
-export const daysForward = (span: number, start: Datable = new Date()): Dayjs => {
+export const daysForward = (span: number, start: Dateble = new Date()): Dayjs => {
   return dayjs(start).add(span, 'day')
 }
 
-export const countDays = (start: Datable, end: Datable): number | null => {
-  start = dayjs(start)
-  end = dayjs(end)
+export const countDays = (start: Dateble, end: Dateble): number | null => {
+  start = dayjs(start).startOf('day')
+  end = dayjs(end).endOf('day')
   if (start > end) {
     return null
   }
-  return dayjs(start).diff(end, 'day')
+
+  return end.diff((start), 'day')
 }
 
-export const listDaysBetween = (start: Datable, end: Datable): Dayjs[] => {
+export const listDaysBetween = (start: Dateble, end: Dateble): Dayjs[] => {
   const dates: Dayjs[] = []
 
   const startDate = dayjs(start).startOf('day')
@@ -107,10 +108,10 @@ export const listDaysBetween = (start: Datable, end: Datable): Dayjs[] => {
  * if any, else null.
  */
 export const findDateBucket = (
-  start: Datable,
-  end: Datable,
+  start: Dateble,
+  end: Dateble,
   bucketSize: number,
-  target: Datable = now()
+  target: Dateble = now()
 ): [Dayjs, Dayjs] | null => {
   const startDate = dayjs(start)
   const endDate = dayjs(end)

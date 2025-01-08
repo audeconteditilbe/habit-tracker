@@ -1,12 +1,13 @@
 <script lang="ts" setup>
-import dayjs, { daysAgo, listDaysBetween, formatDate, humanReadableDate, now } from '@/lib/date'
+import dayjs, { daysAgo, formatDate, humanReadableDate, listDaysBetween, now } from '@/lib/date'
 import { BREAKPOINT_SMALL } from '@/lib/ui'
-import type { SummaryHabit } from '@api/types'
+import type { Habit, SummaryHabit } from '@api/types'
 import Carousel, { type CarouselResponsiveOptions } from 'primevue/carousel'
 import { computed, ref } from 'vue'
 
 type Props = Pick<SummaryHabit, 'entries'> & {
   timespan?: number
+  goalType: Habit['goalType']
 }
 
 type SummaryDay = {
@@ -19,7 +20,7 @@ const NUM_SCROLL_SMALL = 1
 const NUM_VISIBLE_DEFAULT = 7
 const NUM_SCROLL_DEFAULT = 7
 
-const { entries, timespan = 10 } = defineProps<Props>()
+const { entries, timespan = 10, goalType } = defineProps<Props>()
 
 const responsiveOptions = ref<CarouselResponsiveOptions[]>([
   {
@@ -42,7 +43,21 @@ const datesWithEntries = computed<SummaryDay[]>(() =>
     })
 )
 
-
+const colors = computed<{ entry: string, empty: string } | undefined>(() => {
+  if (goalType === 'LT' || goalType === 'LTE') {
+    return {
+      entry: 'var(--error-color)',
+      empty: 'var(--success-color)',
+    }
+  }
+  if (goalType === 'GT' || goalType === 'GTE') {
+    return {
+      entry: 'var(--error-color)',
+      empty: 'var(--success-color)',
+    }
+  }
+  return undefined
+})
 
 const isLastPage = ref<boolean>(false)
 
@@ -52,6 +67,7 @@ const lastPage = computed(() => {
   const numScroll = window.innerWidth <= BREAKPOINT_SMALL ? NUM_SCROLL_SMALL : NUM_SCROLL_DEFAULT
   return Math.ceil((timespan - numVisible) / numScroll)
 })
+
 const handlePageChange = (page: number) => {
   isLastPage.value = page === lastPage.value
 }
@@ -72,10 +88,17 @@ const handlePageChange = (page: number) => {
         <i
           v-if="(slotProps.data as SummaryDay).entryIds.length > 0"
           class="pi pi-circle-fill"
-          style="color: var(--success-color)"
+          :style="colors ? `color: ${colors?.entry}` : undefined"
         />
-        <i v-else class="pi pi-circle" style="color: var(--error-color)" />
-        <span>{{humanReadableDate((slotProps.data as SummaryDay).date)}}</span>
+        <i
+          v-else
+          class="pi pi-circle"
+          :style="colors ? `color: ${colors?.empty}` : undefined"
+        />
+        <span
+          class="ellipsable"
+        >{{humanReadableDate((slotProps.data as SummaryDay).date)}}
+        </span>
       </div>
     </template>
   </Carousel>

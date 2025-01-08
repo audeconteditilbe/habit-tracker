@@ -31,7 +31,7 @@ export interface paths {
             cookie?: never;
         };
         get: operations["entries_retrieve"];
-        put?: never;
+        put: operations["entries_update"];
         post?: never;
         delete: operations["entries_destroy"];
         options?: never;
@@ -57,7 +57,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/habits/{id}/": {
+    "/api/habits/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -65,7 +65,7 @@ export interface paths {
             cookie?: never;
         };
         get: operations["habits_retrieve"];
-        put?: never;
+        put: operations["habits_update"];
         post?: never;
         delete: operations["habits_destroy"];
         options?: never;
@@ -235,6 +235,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["Habit"][];
         };
+        PatchedHabit: {
+            readonly id?: number;
+            author?: number;
+            name?: string;
+            description?: string | null;
+            private?: boolean;
+            status?: components["schemas"]["StatusEnum"];
+            goal?: number | null;
+            goalType?: (components["schemas"]["GoalTypeEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"]) | null;
+            goalTimespan?: number | null;
+            /** Format: date-time */
+            goalFrom?: string | null;
+            /** Format: date-time */
+            goalTo?: string | null;
+        };
         /**
          * @description * `0` - Active
          *     * `1` - Paused
@@ -332,12 +347,40 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description No response body */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["Habit"];
+                };
+            };
+        };
+    };
+    entries_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Habit"];
+                "application/x-www-form-urlencoded": components["schemas"]["Habit"];
+                "multipart/form-data": components["schemas"]["Habit"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Habit"];
+                };
             };
         };
     };
@@ -370,22 +413,33 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedHabit"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedHabit"];
+                "multipart/form-data": components["schemas"]["PatchedHabit"];
+            };
+        };
         responses: {
-            /** @description No response body */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["Habit"];
+                };
             };
         };
     };
     habits_list: {
         parameters: {
             query?: {
+                /** @description Include only ongoing habits. Defaults to 1 (true). */
+                ongoing?: "0" | "1";
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Filter by status */
+                status?: "0" | "1" | "2";
                 /** @description Filter habits by the author's user ID. */
                 userId?: string;
             };
@@ -441,12 +495,40 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description No response body */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["Habit"];
+                };
+            };
+        };
+    };
+    habits_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Habit"];
+                "application/x-www-form-urlencoded": components["schemas"]["Habit"];
+                "multipart/form-data": components["schemas"]["Habit"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Habit"];
+                };
             };
         };
     };
@@ -479,14 +561,21 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedHabit"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedHabit"];
+                "multipart/form-data": components["schemas"]["PatchedHabit"];
+            };
+        };
         responses: {
-            /** @description No response body */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["Habit"];
+                };
             };
         };
     };

@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { countDays, findDateBucket, formatDate, now } from '@/lib/date'
-import type { SummaryHabit } from '@api/types'
-import ProgressBar from 'primevue/progressbar'
-import { computed } from 'vue'
+import { formatDate } from '@/lib/date';
+import type { SummaryHabit } from '@api/types';
+import { computed } from 'vue';
+import TimeProgressBar from './TimeProgressBar.vue';
 
 const { 
   goal,
@@ -50,71 +50,41 @@ const goalMessage = computed(() => {
 
   return messages.join(' ')
 })
-
-const progress = computed(() => {
-  if (goalFrom && goalTo) {
-    const tot = countDays(goalFrom, goalTo)
-    const fromToday = countDays(goalFrom, now())
-    if (tot && fromToday) {
-      return Math.ceil((fromToday / tot) * 100)
-    }
-  }
-  return 0
-})
-
-// const currentStreak = computed(() => {
-//   if (goal && goalFrom && goalTo && goalTimespan) {
-//     const currentTimespan = findDateBucket(goalFrom, goalTo, goalTimespan, goal)
-    
-//     if (currentTimespan) {
-//       const [timespanStart, timespanEnd] = currentTimespan
-
-//     }
-//   }
-
-//   return 0
-// })
 </script>
 
 <template>
-  <div v-if="goalFrom || goalTo || goalMessage" class="container">
-    
-    <div v-if="goalFrom && goalTo" class="details-row">
-      <span class="subtle-text ellipsable">{{ formatDate(goalFrom) }}</span>
-      <ProgressBar class="progressbar" :value="progress" :show-value="false"/>
-      <span class="subtle-text ellipsable">{{ formatDate(goalTo) }}</span>
-    </div>
-    <span v-else-if="goalFrom" class="subtle-text ellipsable">
+  <div v-if="goalFrom || goalTo || goalMessage" class="goal-desc-container">
+    <TimeProgressBar
+      v-if="goalFrom && goalTo"
+      :from="goalFrom"
+      :to="goalTo"
+    />
+    <span v-else-if="goalFrom" class="ellipsable">
       Started on: {{ formatDate(goalFrom) }}
     </span>
-    <span v-else-if="goalTo" class="subtle-text ellipsable">
+    <span v-else-if="goalTo" class="ellipsable">
       Ends on: {{ formatDate(goalTo) }}
     </span>
-    
     <div v-if="goalMessage" class="details-row">
       <i class="pi pi-bullseye" />
-      <span class="subtle-text ellipsable">{{ goalMessage }}</span>
+      <span class="ellipsable">{{ goalMessage }}</span>
     </div>
-
   </div>
 </template>
 
 <style lang="css" scoped>
-.container {
+.goal-desc-container {
   display: flex;
   flex-direction: column;
   gap: var(--p-gap-s);
   flex-grow: 1;
+  line-height: 1;
 
   .details-row {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: var(--p-gap-s);
-
-    .progressbar {
-      flex-grow: 1;
-    }
   }
 }
 </style>

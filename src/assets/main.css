@@ -9,16 +9,15 @@ body {
 
 /* Shared classes */
 
-.subtle-text {
-  color: var(--text-subtle);
-  /* font-size: 0.9rem; */
-  line-height: 1;
-}
-
 .ellipsable {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.text-subtle {
+  color: var(--p-surface-500);
+  line-height: 1.1;
 }
 
 /* #app {}

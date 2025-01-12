@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { countDays, formatDate, now, type Dateble } from '@/lib/date'
+import { countDays, formatDate, now, type Dateable } from '@/lib/date'
 import ProgressBar from 'primevue/progressbar'
 import { computed } from 'vue'
 
 type Props = {
-  from: Dateble
-  to: Dateble
-  target?: Dateble
+  from: Dateable
+  to: Dateable
+  target?: Dateable
 }
 
 const MAX_PROGRESS = 95

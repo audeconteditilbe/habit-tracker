@@ -5,15 +5,20 @@ import TimeProgressBar from '@/components/TimeProgressBar.vue'
 import dayjs, { countDays, findDateBucket, now } from '@/lib/date'
 import { is } from '@/lib/utils'
 import type { Entry, Habit } from '@api/types'
-import { Card, Knob } from 'primevue'
+import Card from 'primevue/card'
+import DatePicker from 'primevue/datepicker'
+import Knob from 'primevue/knob'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-
 const route = useRoute()
 
 const habit = ref<Habit>()
 const entries = ref<Entry[]>([])
 const nextLink = ref<string>()
+
+const dates = computed(() => {
+  return entries.value.map(({date}) => new Date(date))
+})
 
 const sessionLifespan = ref<[dayjs.Dayjs, dayjs.Dayjs] | null>(null)
 const entryCountInSession = ref<number>(0)
@@ -143,12 +148,6 @@ onMounted(async () => {
       <p class="text-subtle">
         {{ habit.description }}
       </p>
-      
-      <TimeProgressBar
-        v-if="habit.goalFrom && habit.goalTo"
-        :from="habit.goalFrom"
-        :to="habit.goalTo"
-      />
 
       <!-- <Card v-if="globalProgress && habit.goalFrom && habit.goalTo">
         <template #title>
@@ -163,63 +162,22 @@ onMounted(async () => {
           />
         </template>
       </Card> -->
-      
-      <Card v-if="habit.goal && habit.goalTimespan">
-        <!-- <template #header>
-          <div style="display: flex; align-items: center; gap: var(--p-gap-m); padding: var(--p-padding-xs)">
-            <i class="pi pi-bullseye" />
-            <span class="ellipsable">{{ habit.goal }} times every {{ habit.goalTimespan }} days</span>
-          </div>
-        </template> -->
+
+      <Card v-if="habit.goal && globalProgress && habit.goalFrom && habit.goalTo">
         <template #title>
-          <h4>How is it going?</h4>
+          <h4>Progression</h4>
         </template>
-        <!-- <template #subtitle v-if="habit.goal && sessionLifespan">
-          <p>
-            To achieve your goal, you should register this habit {{ habit.goal }} times
-            between {{ formatDate(sessionLifespan[0]) }} and {{ formatDate(sessionLifespan[1]) }}
-          </p>
-        </template> -->
         <template #content>
-          <TimeProgressBar v-if="sessionLifespan" :from="sessionLifespan[0]" :to="sessionLifespan[1]" />
-          <!-- TODO: change visualization based on goalType -->
-          <div class="session-progress">
-            <Knob
-              readonly
-              :stroke-width="8"
-              :min="0"
-              :max="habit.goal"
-              :value-template="`${entryCountInSession} / ${habit.goal}`"
-              :model-value="Math.min(entryCountInSession, habit.goal)"
-              :valueColor="sessionGoalStatus === 'fail'
-                ? 'var(--error-color)'
-                : sessionGoalStatus === 'success'
-                  ? 'var(--success-color)'
-                  : undefined
-              "
-            />
-            <p v-if="
-              remainingDaysInSession
-              && remainingDaysInSession > 1
-              && habit.goal > entryCountInSession
-            ">
-              {{ remainingDaysInSession }} days remaining to register
-              {{ habit.goal - entryCountInSession }} entries!
-            </p>
-            <p v-else-if="remainingDaysInSession === 1 && habit.goal > entryCountInSession">
-              Today is the last day to register {{ habit.goal - entryCountInSession }}
-              entries!
-            </p>
-            <p v-else-if="habit.goal <= entryCountInSession">
-              You achieved your goal! Great job!
-            </p>
-          </div>
+          <TimeProgressBar
+            :from="habit.goalFrom"
+            :to="habit.goalTo"
+          />
         </template>
       </Card>
-
-      <Card v-else-if="habit.goal && !habit.goalTimespan && globalProgress">
+      
+      <Card v-if="habit.goal && !habit.goalTimespan && globalProgress">
         <template #title>
-          <h4>How is it going?</h4>
+          <h4>Goal</h4>
         </template>
         <template #content>
           <div class="session-progress">
@@ -256,13 +214,63 @@ onMounted(async () => {
         </template>
       </Card>
 
-      <!-- <DatePicker
-        :model-value="entries.map(({ date }) => new Date(date))"
+      <Card v-else-if="habit.goal && habit.goalTimespan">
+        <template #title>
+          <h4>Current goal</h4>
+        </template>
+        <template #content>
+          <TimeProgressBar v-if="sessionLifespan" :from="sessionLifespan[0]" :to="sessionLifespan[1]" />
+          <div class="session-progress">
+            <Knob
+              readonly
+              :stroke-width="8"
+              :min="0"
+              :max="habit.goal"
+              :value-template="`${entryCountInSession} / ${habit.goal}`"
+              :model-value="Math.min(entryCountInSession, habit.goal)"
+              :valueColor="sessionGoalStatus === 'fail'
+                ? 'var(--error-color)'
+                : sessionGoalStatus === 'success'
+                  ? 'var(--success-color)'
+                  : undefined
+              "
+            />
+            <p v-if="
+              remainingDaysInSession
+              && remainingDaysInSession > 1
+              && habit.goal > entryCountInSession
+            ">
+              {{ remainingDaysInSession }} days remaining to register
+              {{ habit.goal - entryCountInSession }} entries!
+            </p>
+            <p v-else-if="remainingDaysInSession === 1 && habit.goal > entryCountInSession">
+              Today is the last day to register {{ habit.goal - entryCountInSession }}
+              entries!
+            </p>
+            <p v-else-if="habit.goal <= entryCountInSession">
+              You achieved your goal! Great job!
+            </p>
+          </div>
+        </template>
+      </Card>
+
+      <!-- TODO: prevent date selection -->
+      <DatePicker
+
+        :model-value="dates"
+        @update:model-value="(next) => {
+          console.log(dates)
+          console.log(next)
+          return dates
+        }"
+        selectionMode="multiple"
         inline
-        showWeek
-        readonly
         class="w-full sm:w-[30rem]"
-      /> -->
+      >
+        <!-- <template #date="props">
+          <div @click="null">{{props.date.day}}</div>
+        </template> -->
+      </DatePicker>
     </div>
   </ProtectedRoute>
 </template>

@@ -45,7 +45,7 @@ const handleClick = () => {
 
 <style lang="css" scoped>
 .entries-carousel {
-  padding: var(--p-padding-l);
+  padding: var(--p-padding-l) 0;
 }
 .title-content {
   display: flex;

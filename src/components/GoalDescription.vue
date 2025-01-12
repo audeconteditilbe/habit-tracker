@@ -21,7 +21,7 @@ const {
 
 const goalMessage = computed(() => {
   const messages = []
-  if (!goal) {
+  if (!goal || !goalType) {
     return undefined
   }
 
@@ -66,7 +66,7 @@ const goalMessage = computed(() => {
       Ends on: {{ formatDate(goalTo) }}
     </span>
     <div v-if="goalMessage" class="details-row">
-      <i class="pi pi-bullseye" />
+      <!-- <i class="pi pi-bullseye" /> -->
       <span class="ellipsable">{{ goalMessage }}</span>
     </div>
   </div>

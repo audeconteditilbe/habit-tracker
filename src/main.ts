@@ -15,6 +15,7 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 
+// Primevue theme
 const Preset = definePreset(Nora, {
   semantic: {
     primary: {

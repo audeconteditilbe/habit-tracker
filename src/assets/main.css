@@ -19,11 +19,3 @@ body {
   color: var(--p-surface-500);
   line-height: 1.1;
 }
-
-/* #app {}
-
-@media (min-width: 1024px) {
-  body {}
-
-  #app {}
-} */

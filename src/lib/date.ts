@@ -9,7 +9,7 @@ import { findBucket, type Valid } from './utils'
 export type Dateable = Valid<ConfigType>
 
 /**
- * NOTE: dayjs should be imported from here for centralizing plugin extension
+ * NOTE: `dayjs` should be imported from here for centralizing plugin extension
  */
 dayjs.extend(relativeTime)
 dayjs.extend(localizedFormat)

@@ -3,12 +3,34 @@
 /* (probably because they have not variations) */
 
 :root {
-  --body-bg: var(--p-surface-100);
   --text-subtle: var(--p-zinc-500);
   --error-color: var(--p-red-500);
   --success-color: var(--p-lime-500);
+  
+  --body-bg: var(--p-surface-100);
+  
+  --scrollbar-track-bg: var(--p-surface-300);
+  --scrollbar-thumb-bg: var(--p-surface-400);
+  --scrollbar-thumb-hover-bg: var(--p-surface-500);
+
+  /* override fullcalendar style */
+  --fc-button-text-color: var(--p-button-text-outlined-secondary-color);
+  --fc-button-bg-color: var(--p-button-outlined-secondary-background);
+  --fc-button-border-color: var(--p-button-outlined-secondary-border-color);
+  --fc-button-hover-bg-color: var(--p-button-outlined-secondary-hover-background);
+  --fc-button-hover-border-color: var(--p-button-outlined-secondary-hover-border-color);
+  --fc-button-active-bg-color: var(--p-button-outlined-secondary-active-background);
+  --fc-button-active-border-color: var(--p-button-outlined-secondary-active-border-color);
+  --fc-today-bg-color: var(--p-primary-100);
 }
 
 :root[class='dark-mode'] {
   --body-bg: var(--p-surface-950);
+
+  --scrollbar-track-bg: var(--p-surface-700);
+  --scrollbar-thumb-bg: var(--p-surface-400);
+  --scrollbar-thumb-hover-bg: var(--p-surface-500);
+
+  /* override fullcalendar style */
+  --fc-today-bg-color: var(--p-primary-900);
 }

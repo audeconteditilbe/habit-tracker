@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { RestClientSingleton } from '@/clients'
+import HabitCalendar from '@/components/HabitCalendar.vue'
 import ProtectedRoute from '@/components/ProtectedRoute.vue'
 import TimeProgressBar from '@/components/TimeProgressBar.vue'
 import dayjs, { countDays, findDateBucket, now } from '@/lib/date'
 import { is } from '@/lib/utils'
 import type { Entry, Habit } from '@api/types'
 import Card from 'primevue/card'
-import DatePicker from 'primevue/datepicker'
 import Knob from 'primevue/knob'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+
 const route = useRoute()
 
 const habit = ref<Habit>()
@@ -253,24 +254,9 @@ onMounted(async () => {
           </div>
         </template>
       </Card>
-
-      <!-- TODO: prevent date selection -->
-      <DatePicker
-
-        :model-value="dates"
-        @update:model-value="(next) => {
-          console.log(dates)
-          console.log(next)
-          return dates
-        }"
-        selectionMode="multiple"
-        inline
-        class="w-full sm:w-[30rem]"
-      >
-        <!-- <template #date="props">
-          <div @click="null">{{props.date.day}}</div>
-        </template> -->
-      </DatePicker>
+    
+      <HabitCalendar :events="dates.map((date) => ({ date }))"/>
+    
     </div>
   </ProtectedRoute>
 </template>

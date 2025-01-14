@@ -254,8 +254,13 @@ onMounted(async () => {
           </div>
         </template>
       </Card>
+
+      <Card>
+        <template #content>
+          <HabitCalendar :events="dates.map((date) => ({ date }))"/>
+        </template>
+      </Card>
     
-      <HabitCalendar :events="dates.map((date) => ({ date }))"/>
     
     </div>
   </ProtectedRoute>

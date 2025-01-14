@@ -1,5 +1,6 @@
-@import './base.css';
 @import './variables.css';
+@import './base.css';
+@import './fullcalendar.css';
 
 body {
   min-height: 100vh;

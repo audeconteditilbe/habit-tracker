@@ -129,6 +129,18 @@ export class RestClient {
       return Promise.reject(err)
     })
   }
+
+  async getHabit(habitId: number) {
+    return this._client.GET(
+      '/api/habits/{id}',
+      { params: { path: { id: habitId } }, headers: this.authHeaders }
+    )
+    .then(handleResponse)
+    .catch((err: Error) => {
+      console.error('Error fetching habit details', err)
+      return Promise.reject(err)
+    })
+  }
   
   async whoAmI() {
     return this._client.GET(

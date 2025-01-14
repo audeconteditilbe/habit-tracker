@@ -50,7 +50,7 @@ onBeforeMount(() => {
   auth()
   .catch(() => isAuthorized.value = false)
   .finally(async () => {
-    if (isAuthorized.value) {
+    if (isAuthorized.value && !userStore.user) {
       // fetch user info if the user is authorized
       await userStore.fetchCurrentUser()
     }

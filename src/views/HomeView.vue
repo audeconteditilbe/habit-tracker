@@ -4,7 +4,7 @@ import ProtectedRoute from '@/components/ProtectedRoute.vue'
 import SummaryCard from '@/components/SummaryCard.vue'
 import { useUserStore } from '@/stores/userStore'
 import type { SummaryHabit } from '@api/types'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const userStore = useUserStore()
 const summary = ref<SummaryHabit[]>([])
@@ -18,6 +18,13 @@ watch(
     summary.value = (await GqlClientSingleton.getUserHabitSummary(userStore.user.id))
   }
 )
+
+onMounted(async () => {
+    if (!userStore.user) {
+      return
+    }
+    summary.value = (await GqlClientSingleton.getUserHabitSummary(userStore.user.id))
+  })
 </script>
 
 <template>

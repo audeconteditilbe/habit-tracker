@@ -15,7 +15,7 @@ export const is = <T>(input: T): input is Exclude<T, undefined | null> =>
  * 
  * # (0, 1, 2), (3, 4, 5), (6, 7, 8), (9, 10) -> buckets of size 2
  * findBucket(0, 10, 3, 4)
- * > [6, 7, 8]
+ * > [6, 8]
  */
 export const findBucket = (
   start: number,

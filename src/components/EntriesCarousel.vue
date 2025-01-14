@@ -1,12 +1,13 @@
 <script lang="ts" setup>
-import dayjs, { daysAgo, listDaysBetween, formatDate, humanReadableDate, now } from '@/lib/date'
-import { BREAKPOINT_SMALL } from '@/lib/ui'
-import type { SummaryHabit } from '@api/types'
+import dayjs, { daysAgo, formatDate, humanReadableDate, listDaysBetween, now } from '@/lib/date'
+import { BREAKPOINT_L, BREAKPOINT_M, BREAKPOINT_S, BREAKPOINT_XL, BREAKPOINT_XS } from '@/lib/ui'
+import type { Habit, SummaryHabit } from '@api/types'
 import Carousel, { type CarouselResponsiveOptions } from 'primevue/carousel'
 import { computed, ref } from 'vue'
 
 type Props = Pick<SummaryHabit, 'entries'> & {
   timespan?: number
+  goalType?: Habit['goalType']
 }
 
 type SummaryDay = {
@@ -14,18 +15,40 @@ type SummaryDay = {
   entryIds: number[]
 }
 
-const NUM_VISIBLE_SMALL = 1
-const NUM_SCROLL_SMALL = 1
+const NUM_SCROLL_DEFAULT = 1
 const NUM_VISIBLE_DEFAULT = 7
-const NUM_SCROLL_DEFAULT = 7
+const NUM_VISIBLE_L = 4
+const NUM_VISIBLE_M = 3
+const NUM_VISIBLE_S = 2
+const NUM_VISIBLE_XS = 1
 
-const { entries, timespan = 10 } = defineProps<Props>()
+const { entries, timespan = 10, goalType } = defineProps<Props>()
 
 const responsiveOptions = ref<CarouselResponsiveOptions[]>([
   {
-    breakpoint: `${BREAKPOINT_SMALL}px`,
-    numVisible: NUM_VISIBLE_SMALL,
-    numScroll: NUM_SCROLL_SMALL
+    breakpoint: `${BREAKPOINT_XL}px`,
+    numVisible: NUM_VISIBLE_DEFAULT,
+    numScroll: NUM_SCROLL_DEFAULT
+  },
+  {
+    breakpoint: `${BREAKPOINT_L}px`,
+    numVisible: NUM_VISIBLE_L,
+    numScroll: NUM_SCROLL_DEFAULT
+  },
+  {
+    breakpoint: `${BREAKPOINT_M}px`,
+    numVisible: NUM_VISIBLE_M,
+    numScroll: NUM_SCROLL_DEFAULT
+  },
+  {
+    breakpoint: `${BREAKPOINT_S}px`,
+    numVisible: NUM_VISIBLE_S,
+    numScroll: NUM_SCROLL_DEFAULT
+  },
+  {
+    breakpoint: `${BREAKPOINT_XS}px`,
+    numVisible: NUM_VISIBLE_XS,
+    numScroll: NUM_SCROLL_DEFAULT
   },
 ])
 
@@ -42,19 +65,21 @@ const datesWithEntries = computed<SummaryDay[]>(() =>
     })
 )
 
-
-
-const isLastPage = ref<boolean>(false)
-
-// TODO: make responsive
-const lastPage = computed(() => {
-  const numVisible = window.innerWidth <= BREAKPOINT_SMALL ? NUM_VISIBLE_SMALL : NUM_VISIBLE_DEFAULT
-  const numScroll = window.innerWidth <= BREAKPOINT_SMALL ? NUM_SCROLL_SMALL : NUM_SCROLL_DEFAULT
-  return Math.ceil((timespan - numVisible) / numScroll)
+const colors = computed<{ entry: string, empty: string } | undefined>(() => {
+  if (goalType === 'LT' || goalType === 'LTE') {
+    return {
+      entry: 'var(--error-color)',
+      empty: 'var(--success-color)',
+    }
+  }
+  if (goalType === 'GT' || goalType === 'GTE') {
+    return {
+      entry: 'var(--success-color)',
+      empty: 'var(--error-color)',
+    }
+  }
+  return undefined
 })
-const handlePageChange = (page: number) => {
-  isLastPage.value = page === lastPage.value
-}
 
 </script>
 
@@ -65,17 +90,24 @@ const handlePageChange = (page: number) => {
     :numVisible="NUM_VISIBLE_DEFAULT"
     :numScroll="NUM_SCROLL_DEFAULT"
     :responsiveOptions="responsiveOptions"
-    @update:page="handlePageChange"
   >
     <template #item="slotProps">
       <div class="entry-item" :title="formatDate((slotProps.data as SummaryDay).date)">
         <i
           v-if="(slotProps.data as SummaryDay).entryIds.length > 0"
           class="pi pi-circle-fill"
-          style="color: var(--success-color)"
+          :style="colors ? `color: ${colors?.entry}` : undefined"
         />
-        <i v-else class="pi pi-circle" style="color: var(--error-color)" />
-        <span>{{humanReadableDate((slotProps.data as SummaryDay).date)}}</span>
+        <i
+          v-else
+          class="pi pi-circle"
+          :style="colors ? `color: ${colors?.empty}` : undefined"
+        />
+        <span
+          class="small"
+        >
+          {{ humanReadableDate((slotProps.data as SummaryDay).date) }}
+        </span>
       </div>
     </template>
   </Carousel>
@@ -86,5 +118,8 @@ const handlePageChange = (page: number) => {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+.small {
+  font-size: 0.9rem;
 }
 </style>

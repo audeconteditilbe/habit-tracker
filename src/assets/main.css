@@ -1,5 +1,6 @@
-@import './base.css';
 @import './variables.css';
+@import './base.css';
+@import './fullcalendar.css';
 
 body {
   min-height: 100vh;
@@ -9,22 +10,13 @@ body {
 
 /* Shared classes */
 
-.subtle-text {
-  color: var(--text-subtle);
-  /* font-size: 0.9rem; */
-  line-height: 1;
-}
-
 .ellipsable {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-/* #app {}
-
-@media (min-width: 1024px) {
-  body {}
-
-  #app {}
-} */
+.text-subtle {
+  color: var(--p-surface-500);
+  line-height: 1.1;
+}

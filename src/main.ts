@@ -15,6 +15,7 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 
+// Primevue theme
 const Preset = definePreset(Nora, {
   semantic: {
     primary: {
@@ -89,20 +90,17 @@ const Preset = definePreset(Nora, {
     }
   },
   components: {
-    card: {
-      colorScheme: {
-        light: {
-          background: '{surface.100}'
-        },
-        dark: {
-          background: '{surface.900}'
-        }
-      }
-    },
     progressbar: {
       height: '0.5rem'
-    }
-
+    },
+    // datepicker: {
+    //   date: {
+    //     selected: {
+    //       background: 'none',
+    //       color: '{datepicker.date.color}'
+    //     }
+    //   }
+    // }
   }
 })
 

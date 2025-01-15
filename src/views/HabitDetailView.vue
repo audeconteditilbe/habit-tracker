@@ -142,7 +142,7 @@ onMounted(async () => {
 
 <template>
   <ProtectedRoute>
-    <div v-if="fetchingHabit">
+    <div v-if="fetchingHabit" class="habit-detail-loading-view">
       <ProgressSpinner />
     </div>
     <div v-else-if="habit" class="habit-detail-view">
@@ -253,6 +253,12 @@ onMounted(async () => {
 </template>
 
 <style lang="css" scoped>
+.habit-detail-loading-view {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .habit-detail-view {
   display: flex;
   flex-direction: column;

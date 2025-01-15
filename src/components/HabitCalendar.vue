@@ -1,44 +1,34 @@
 <script setup lang="ts">
-import type { Dateable } from '@/lib/date';
-import dayjs from '@/lib/date';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 import { BREAKPOINT_S } from '@/lib/ui';
 import { type CalendarOptions } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import FullCalendar from '@fullcalendar/vue3';
+import type { Entry } from '@api/types';
 // import interactionPlugin from '@fullcalendar/interaction'
 
-type Event = {
-  date: Dateable
-}
-
 type Props = {
-  events: Event[]
+  entries: Entry[]
 }
 
 const props = defineProps<Props>()
 
-const commonOptions = computed<Partial<CalendarOptions>>(() => ({
+const commonOptions: Partial<CalendarOptions> = {
   eventDisplay: 'background',
   headerToolbar: {
     left: 'title',
     right: 'prev,next today',
   },
-  
   firstDay: 1,
   contentHeight: 'auto',
   fixedWeekCount: false,
-  events: props.events.flatMap(({ date }) => ([{
-    date: dayjs(date).toDate(),
-    allDay: true,
-  }])),
   eventColor: 'var(--p-primary-500)',
-}))
+}
 
 const smallScreenOptions = computed<CalendarOptions>(() => ({
   plugins: [ dayGridPlugin ],
-  initialView: 'dayGridMonthLarge',
+  initialView: 'dayGridMonth',
   viewClassNames: [],
   views: {
     dayGridMonthLarge: {
@@ -53,11 +43,14 @@ const smallScreenOptions = computed<CalendarOptions>(() => ({
     dayGridMonth: 'SMALL',
     dayGridMonthLarge: 'XL',
   },
-    
-  ...commonOptions.value
+
+  events: props.entries.map(({date}) => ({ date, allDay: true })),
+  
+  ...commonOptions
 }))
 
-const largeCalendarOptions = computed<CalendarOptions>(() => ({
+const largeCalendarOptions = computed<CalendarOptions>(
+  () => ({
   plugins: [ dayGridPlugin ],
   initialView: 'dayGridMonth',
   viewClassNames: [],
@@ -69,11 +62,13 @@ const largeCalendarOptions = computed<CalendarOptions>(() => ({
   //     eventDisplay: 'list-item',
   //   }
   // },
-  contentHeight: 'auto',
-  ...commonOptions.value
+  events: props.entries.map(({date}) => ({ date, allDay: true })),
+  ...commonOptions
 }))
 
-const calendarOptions = ref<CalendarOptions>(largeCalendarOptions.value)
+const calendarOptions = ref<CalendarOptions>(
+  window.innerWidth > BREAKPOINT_S ? largeCalendarOptions.value : smallScreenOptions.value
+)
 const resizeEventHandler = () => {
   if (window.innerWidth > BREAKPOINT_S) {
     calendarOptions.value = largeCalendarOptions.value

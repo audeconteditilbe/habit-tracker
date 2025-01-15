@@ -6,6 +6,7 @@ import TimeProgressBar from '@/components/TimeProgressBar.vue'
 import dayjs, { countDays, findDateBucket, now } from '@/lib/date'
 import { is } from '@/lib/utils'
 import type { Entry, Habit } from '@api/types'
+import ProgressSpinner from 'primevue/progressspinner'
 import Card from 'primevue/card'
 import Knob from 'primevue/knob'
 import { computed, onMounted, ref } from 'vue'
@@ -17,9 +18,8 @@ const habit = ref<Habit>()
 const entries = ref<Entry[]>([])
 const nextLink = ref<string>()
 
-const dates = computed(() => {
-  return entries.value.map(({date}) => new Date(date))
-})
+const fetchingHabit = ref<boolean>(true)
+const fetchingEntries = ref<boolean>(true)
 
 const sessionLifespan = ref<[dayjs.Dayjs, dayjs.Dayjs] | null>(null)
 const entryCountInSession = ref<number>(0)
@@ -97,17 +97,15 @@ onMounted(async () => {
     // TODO
     console.error('Error fetching habit', err)
   }
-
+  fetchingHabit.value = false
   if (!habit.value) {
     return
   }
 
   const { goalFrom, goalTo, goalTimespan } = habit.value
-  
   if (goalFrom && goalTo && goalTimespan) {
     sessionLifespan.value = findDateBucket(goalFrom, goalTo, goalTimespan, now())
   }
-
   if (sessionLifespan.value) {
     const [timeStart, timeEnd] = sessionLifespan.value
     
@@ -124,58 +122,47 @@ onMounted(async () => {
       })
   }
 
-  if (goalFrom && goalTo) {
-    RestClientSingleton
-      .getEntries({ habitId: `${habit.value.id}` })
-      // TODO: handle pagination!
-      .then(({ count, results, next }) => {
-        globalProgress.value = count
-        entries.value = results
-        nextLink.value = next ?? undefined
-      })
-      .catch((err) => {
-        // TODO
-        console.error('Error fetching entries', err)
-      })
-  }
+  RestClientSingleton
+    .getEntries({ habitId: `${habit.value.id}` })
+    // TODO: handle pagination!
+    .then(({ count, results, next }) => {
+      globalProgress.value = count
+      entries.value = results
+      nextLink.value = next ?? undefined
+    })
+    .catch((err) => {
+      // TODO
+      console.error('Error fetching entries', err)
+    })
+    .finally(() => {
+      fetchingEntries.value = false
+    })
 })
 </script>
 
 <template>
   <ProtectedRoute>
-    <div v-if="habit" class="habit-detail-view">
+    <div v-if="fetchingHabit">
+      <ProgressSpinner />
+    </div>
+    <div v-else-if="habit" class="habit-detail-view">
       
-      <h3>{{ habit.name }}</h3>
-      <p class="text-subtle">
-        {{ habit.description }}
-      </p>
+      <div class="title">
+        <h2>{{ habit.name }}</h2>
+        <p class="text-subtle">{{ habit.description }}</p>
+      </div>
 
-      <!-- <Card v-if="globalProgress && habit.goalFrom && habit.goalTo">
-        <template #title>
-          <h4>Tracking period</h4>
-        </template>
-        <template #content>
-          <TimeProgressBar
-            v-if="habit.goalFrom && habit.goalTo"
-            :from="habit.goalFrom"
-            :to="habit.goalTo"
-            :progress="globalProgress"
-          />
-        </template>
-      </Card> -->
-
+      <!-- Time progression -->
       <Card v-if="habit.goal && globalProgress && habit.goalFrom && habit.goalTo">
         <template #title>
           <h4>Progression</h4>
         </template>
         <template #content>
-          <TimeProgressBar
-            :from="habit.goalFrom"
-            :to="habit.goalTo"
-          />
+          <TimeProgressBar :from="habit.goalFrom" :to="habit.goalTo" />
         </template>
       </Card>
       
+      <!-- Goal progression (global) -->
       <Card v-if="habit.goal && !habit.goalTimespan && globalProgress">
         <template #title>
           <h4>Goal</h4>
@@ -214,7 +201,7 @@ onMounted(async () => {
           </div>
         </template>
       </Card>
-
+      <!-- Goal progression (current cycle) -->
       <Card v-else-if="habit.goal && habit.goalTimespan">
         <template #title>
           <h4>Current goal</h4>
@@ -233,8 +220,7 @@ onMounted(async () => {
                 ? 'var(--error-color)'
                 : sessionGoalStatus === 'success'
                   ? 'var(--success-color)'
-                  : undefined
-              "
+                  : undefined"
             />
             <p v-if="
               remainingDaysInSession
@@ -255,13 +241,13 @@ onMounted(async () => {
         </template>
       </Card>
 
+      <!-- Calendar -->
       <Card>
         <template #content>
-          <HabitCalendar :events="dates.map((date) => ({ date }))"/>
+          <ProgressSpinner v-if="fetchingEntries" />
+          <HabitCalendar v-else :entries="entries" />
         </template>
       </Card>
-    
-    
     </div>
   </ProtectedRoute>
 </template>
@@ -271,6 +257,13 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: var(--p-gap-m);
+  
+  .title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 }
 .session-progress {
   display: flex;

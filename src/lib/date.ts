@@ -2,6 +2,7 @@ import dayjs, { Dayjs, type ConfigType } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import calendar from 'dayjs/plugin/calendar'
+// import weekday from 'dayjs/plugin/weekday'
 // import updateLocale from 'dayjs/plugin/updateLocale'
 
 import { findBucket, type Valid } from './utils'
@@ -14,6 +15,7 @@ export type Dateable = Valid<ConfigType>
 dayjs.extend(relativeTime)
 dayjs.extend(localizedFormat)
 dayjs.extend(calendar)
+// dayjs.extend(weekday)
 
 // dayjs.extend(updateLocale)
 // dayjs.updateLocale('en', {
@@ -33,12 +35,23 @@ export default dayjs
  * Utils
  */
 
+export const weekDays = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+]
+
 const TODAY = 'Today'
 const YESTERDAY = 'Yesterday'
 const TOMORROW = 'Tomorrow'
 const LAST = 'Last'
 
 export const now = () => dayjs()
+export const isSameDay = (date: Dateable, date2: Dateable) => dayjs(date).isSame(date2, 'day')
 
 export const isToday = (date: Dateable) => dayjs(date).isSame(now(), 'day')
 export const isYesterday = (date: Dateable) => dayjs(date).isSame(daysAgo(1), 'day')
@@ -62,7 +75,6 @@ export const humanReadableDate = (date: Dateable) => {
     sameElse: 'L'
   })
 }
-
 
 export const daysAgo = (span: number, start: Dateable = new Date()): Dayjs => {
   return dayjs(start).add(-span, 'day')

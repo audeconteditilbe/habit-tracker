@@ -34,3 +34,6 @@ export const findBucket = (
 
   return [bucketStart, bucketEnd]
 }
+
+export const countTo = (to: number, from: number = 0) =>
+  to >= from ? Array.from({ length: to-from+1 }, (_, i) => i + from) : []

@@ -1,90 +1,169 @@
-<script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
-
-import { BREAKPOINT_S } from '@/lib/ui';
-import { type CalendarOptions } from '@fullcalendar/core';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import FullCalendar from '@fullcalendar/vue3';
+<script lang="ts" setup>
+import dayjs, { isSameDay, listDaysBetween, now, weekDays } from '@/lib/date';
+import { countTo } from '@/lib/utils';
 import type { Entry } from '@api/types';
-// import interactionPlugin from '@fullcalendar/interaction'
+import type { Dayjs } from 'dayjs';
+import Button from 'primevue/button';
+import ButtonGroup from 'primevue/buttongroup';
+
+import { computed, ref } from 'vue';
 
 type Props = {
   entries: Entry[]
 }
+type Slot = {
+  entries: Entry[]
+  date: Dayjs
+}
 
 const props = defineProps<Props>()
 
-const commonOptions: Partial<CalendarOptions> = {
-  eventDisplay: 'background',
-  headerToolbar: {
-    left: 'title',
-    right: 'prev,next today',
-  },
-  firstDay: 1,
-  contentHeight: 'auto',
-  fixedWeekCount: false,
-  eventColor: 'var(--p-primary-500)',
-}
+const currentRange = ref<[Dayjs, Dayjs]>([now().startOf('month'), now().endOf('month')])
 
-const smallScreenOptions = computed<CalendarOptions>(() => ({
-  plugins: [ dayGridPlugin ],
-  initialView: 'dayGridMonth',
-  viewClassNames: [],
-  views: {
-    dayGridMonthLarge: {
-      type: 'dayGridMonth',
-      viewClassNames: ['fc-min-width'],
-    },
-  },
-  footerToolbar: {
-    center: 'dayGridMonthLarge,dayGridMonth',
-  },
-  buttonText: {
-    dayGridMonth: 'SMALL',
-    dayGridMonthLarge: 'XL',
-  },
+const firstDayOffset = computed(() => {
+  const firstDay = currentRange.value[0].day()
+  return (firstDay === 0 ? 6 : firstDay - 1)
+})
 
-  events: props.entries.map(({date}) => ({ date, allDay: true })),
-  
-  ...commonOptions
-}))
+const currentMonthName = computed(() => currentRange.value[0].format('MMMM YYYY'))
 
-const largeCalendarOptions = computed<CalendarOptions>(
-  () => ({
-  plugins: [ dayGridPlugin ],
-  initialView: 'dayGridMonth',
-  viewClassNames: [],
-  // views: {
-  //   multiHabitMonth: {
-  //     type: 'dayGridMonth',
-  //     // viewClassNames: ['fc-min-width'],
-  //     // TODO: not working
-  //     eventDisplay: 'list-item',
-  //   }
-  // },
-  events: props.entries.map(({date}) => ({ date, allDay: true })),
-  ...commonOptions
-}))
-
-const calendarOptions = ref<CalendarOptions>(
-  window.innerWidth > BREAKPOINT_S ? largeCalendarOptions.value : smallScreenOptions.value
+const entriesByIsoDate = computed(() =>
+  props.entries.reduce<Record<string, Entry[]>>((acc, entry) => {
+    const { date } = entry
+    const key = dayjs(date).startOf('day').toISOString()
+    if (!(key in acc)) {
+      acc[key] = []
+    }
+    acc[key].push(entry)
+    return acc
+  }, {})
 )
-const resizeEventHandler = () => {
-  if (window.innerWidth > BREAKPOINT_S) {
-    calendarOptions.value = largeCalendarOptions.value
-  } else {
-    calendarOptions.value = smallScreenOptions.value
-  }
-}
 
-onMounted(() => {
-  window.addEventListener("resize", resizeEventHandler)
+const slots = computed<Slot[]>(() => {
+  const [start, end] = currentRange.value
+  return listDaysBetween(start, end).map((date) => {
+    const key = date.toISOString()
+    const entries: Entry[] = entriesByIsoDate.value[key] ?? []
+    return { entries, date }
+  })
 })
-onUnmounted(() => {
-  window.removeEventListener("resize", resizeEventHandler)
+
+const slotsWithPadding = computed<(Slot | null)[]>(() => {
+  const emptySlots = Array(firstDayOffset.value).fill(null)
+  return [...emptySlots, ...slots.value]
 })
+
+const nextMonth = () => {
+  const [, oldEnd] = currentRange.value
+  const newStart = oldEnd.add(1, 'day').startOf('month')
+  const newEnd = newStart.endOf('month')
+  currentRange.value = [newStart, newEnd]
+}
+const prevMonth = () => {
+  const [oldStart] = currentRange.value
+  const newStart = oldStart.add(-1, 'day').startOf('month')
+  const newEnd = newStart.endOf('month')
+  currentRange.value = [newStart, newEnd]
+}
+const currMonth = () => {
+  currentRange.value = [
+    now().startOf('month'),
+    now().endOf('month')
+  ]
+}
 </script>
 
 <template>
-  <FullCalendar :options="calendarOptions" />
+  <div class="calendar-container">
+    <div class="header">
+      <ButtonGroup>
+        <Button
+          @click="prevMonth"
+          icon="pi pi-caret-left"
+          severity="secondary"
+          variant="outlined"
+        />
+        <Button
+          @click="nextMonth"
+          icon="pi pi-caret-right"
+          severity="secondary"
+          variant="outlined"
+        />
+      </ButtonGroup>
+      <h2>{{ currentMonthName }}</h2>
+      <Button
+        @click="currMonth"
+        label="Today"
+        severity="secondary"
+        variant="outlined"
+      />
+    </div>
+    <div class="calendar">
+      <div class="ellipsable" v-for="index in countTo(6)" :key="index" >
+        <span>{{ weekDays[index] }}</span>
+      </div>
+      <div
+        v-for="(slot, index) in slotsWithPadding"
+        :class="'day'+`${slot?.date && isSameDay(now(), slot.date) ? ' today' : ''}`"
+        :key="index"
+      >
+        <template v-if="slot">
+          <span>{{ slot.date.date() }}</span>
+          <div class="day-body">
+            <div v-for="{id} in slot.entries" :key="id" class="event-indicator" />
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.calendar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    width: inherit;
+  }
+  
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--p-gap-s);
+    width: inherit;
+    
+    .day {
+      position: relative;
+      border: 1px solid #ddd;
+      text-align: center;
+      border-radius: 5px;
+      min-height: 5rem;
+      
+      &.today {
+        /* TODO handle bright mode */
+        background-color: var(--p-surface-700);
+      }
+
+      .day-body {
+        display: flex;
+        flex-direction: column;
+        padding: var(--p-padding-xs);
+        gap: var(--p-gap-xs);
+
+        .event-indicator {
+          width: 100%;
+          height: 10px;
+          background-color: var(--p-primary-500);
+        }
+      }
+    }
+  }
+}
+</style>

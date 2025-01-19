@@ -51,7 +51,8 @@ const TOMORROW = 'Tomorrow'
 const LAST = 'Last'
 
 export const now = () => dayjs()
-export const isSameDay = (date: Dateable, date2: Dateable) => dayjs(date).isSame(date2, 'day')
+export const isSameDay = (date: Dateable, date2: Dateable) =>
+  dayjs(date).isSame(date2, 'day')
 
 export const isToday = (date: Dateable) => dayjs(date).isSame(now(), 'day')
 export const isYesterday = (date: Dateable) => dayjs(date).isSame(daysAgo(1), 'day')

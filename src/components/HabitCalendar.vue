@@ -10,7 +10,9 @@ import { computed, ref } from 'vue';
 
 type Props = {
   entries: Entry[]
+  onAddEntry: (date: Dayjs) => void
 }
+
 type Slot = {
   entries: Entry[]
   date: Dayjs
@@ -19,11 +21,6 @@ type Slot = {
 const props = defineProps<Props>()
 
 const currentRange = ref<[Dayjs, Dayjs]>([now().startOf('month'), now().endOf('month')])
-
-const firstDayOffset = computed(() => {
-  const firstDay = currentRange.value[0].day()
-  return (firstDay === 0 ? 6 : firstDay - 1)
-})
 
 const currentMonthName = computed(() => currentRange.value[0].format('MMMM YYYY'))
 
@@ -49,27 +46,25 @@ const slots = computed<Slot[]>(() => {
 })
 
 const slotsWithPadding = computed<(Slot | null)[]>(() => {
-  const emptySlots = Array(firstDayOffset.value).fill(null)
-  return [...emptySlots, ...slots.value]
+  const firstDay = currentRange.value[0].day()
+  const firstDayOffset = (firstDay === 0 ? 6 : firstDay - 1)
+  return [...Array(firstDayOffset).fill(null), ...slots.value]
 })
 
-const nextMonth = () => {
-  const [, oldEnd] = currentRange.value
-  const newStart = oldEnd.add(1, 'day').startOf('month')
-  const newEnd = newStart.endOf('month')
-  currentRange.value = [newStart, newEnd]
-}
 const prevMonth = () => {
   const [oldStart] = currentRange.value
   const newStart = oldStart.add(-1, 'day').startOf('month')
   const newEnd = newStart.endOf('month')
   currentRange.value = [newStart, newEnd]
 }
+const nextMonth = () => {
+  const [, oldEnd] = currentRange.value
+  const newStart = oldEnd.add(1, 'day').startOf('month')
+  const newEnd = newStart.endOf('month')
+  currentRange.value = [newStart, newEnd]
+}
 const currMonth = () => {
-  currentRange.value = [
-    now().startOf('month'),
-    now().endOf('month')
-  ]
+  currentRange.value = [now().startOf('month'), now().endOf('month')]
 }
 </script>
 
@@ -96,10 +91,12 @@ const currMonth = () => {
         label="Today"
         severity="secondary"
         variant="outlined"
+        rounded
+        :disabled="now().month() === currentRange[0].month()"
       />
     </div>
     <div class="calendar">
-      <div class="ellipsable" v-for="index in countTo(6)" :key="index" >
+      <div v-for="index in countTo(6)" :key="index" class="ellipsable">
         <span>{{ weekDays[index] }}</span>
       </div>
       <div
@@ -108,9 +105,19 @@ const currMonth = () => {
         :key="index"
       >
         <template v-if="slot">
-          <span>{{ slot.date.date() }}</span>
+          <span>
+            {{ slot.date.date() }}
+          </span>
           <div class="day-body">
             <div v-for="{id} in slot.entries" :key="id" class="event-indicator" />
+          </div>
+          <div class="day-footer">
+            <Button
+              @click="onAddEntry(slot.date)"
+              icon="pi pi-plus"
+              size="small"
+              variant="text"
+            />
           </div>
         </template>
       </div>
@@ -124,15 +131,20 @@ const currMonth = () => {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  
+  gap: var(--p-gap-m);
+
   .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1rem;
     width: inherit;
+    
+    gap: var(--p-gap-xs);
+    h2 {
+      white-space: nowrap;
+    }
   }
-  
+
   .calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -140,12 +152,15 @@ const currMonth = () => {
     width: inherit;
     
     .day {
+      display: flex;
+      flex-direction: column;
+
       position: relative;
       border: 1px solid #ddd;
       text-align: center;
       border-radius: 5px;
       min-height: 5rem;
-      
+
       &.today {
         /* TODO handle bright mode */
         background-color: var(--p-surface-700);
@@ -154,13 +169,22 @@ const currMonth = () => {
       .day-body {
         display: flex;
         flex-direction: column;
-        padding: var(--p-padding-xs);
         gap: var(--p-gap-xs);
+        flex-grow: 1;
+        padding: var(--p-padding-xs);
 
         .event-indicator {
           width: 100%;
           height: 10px;
           background-color: var(--p-primary-500);
+          border-radius: 3px;
+        }
+      }
+
+      .day-footer {
+        button {
+          width: 100%;
+          height: 1rem;
         }
       }
     }

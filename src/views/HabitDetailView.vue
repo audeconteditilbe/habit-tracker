@@ -87,6 +87,40 @@ const sessionGoalStatus = computed<'fail' | 'success' | 'pending'>(() => {
   return 'pending'
 })
 
+const fetchEntries = () => {
+  if (!habit.value) {
+    return
+  }
+  RestClientSingleton
+    .getEntries({ habitId: `${habit.value.id}` })
+    // TODO: handle pagination!
+    .then(({ count, results, next }) => {
+      globalProgress.value = count
+      entries.value = results
+      nextLink.value = next ?? undefined
+    })
+    .catch((err) => {
+      // TODO
+      console.error('Error fetching entries', err)
+    })
+    .finally(() => {
+      fetchingEntries.value = false
+    })
+}
+
+const addEntry = (date: dayjs.Dayjs) => {
+  if (!habit.value) { return }
+  RestClientSingleton.addEntry({
+    date: date.toISOString(),
+    habit: habit.value?.id,
+  })
+  .then(fetchEntries)
+  .catch((err) => {
+    // TODO
+    console.error('Error creating entry', err)
+  })
+}
+
 onMounted(async () => {
   const habitId = route.params.id
   if (typeof habitId !== 'string') { return }
@@ -122,21 +156,7 @@ onMounted(async () => {
       })
   }
 
-  RestClientSingleton
-    .getEntries({ habitId: `${habit.value.id}` })
-    // TODO: handle pagination!
-    .then(({ count, results, next }) => {
-      globalProgress.value = count
-      entries.value = results
-      nextLink.value = next ?? undefined
-    })
-    .catch((err) => {
-      // TODO
-      console.error('Error fetching entries', err)
-    })
-    .finally(() => {
-      fetchingEntries.value = false
-    })
+  fetchEntries()
 })
 </script>
 
@@ -245,7 +265,7 @@ onMounted(async () => {
       <Card>
         <template #content>
           <ProgressSpinner v-if="fetchingEntries" />
-          <HabitCalendar v-else :entries="entries" />
+          <HabitCalendar v-else :entries="entries" @add-entry="addEntry" />
         </template>
       </Card>
     </div>

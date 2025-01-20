@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { RestClientSingleton } from '@/clients'
-import HabitCalendar from '@/components/HabitCalendar.vue'
+import HabitCalendar from '@/components/HabitCalendar/HabitCalendar.vue'
 import ProtectedRoute from '@/components/ProtectedRoute.vue'
 import TimeProgressBar from '@/components/TimeProgressBar.vue'
 import dayjs, { countDays, findDateBucket, now } from '@/lib/date'
 import { is } from '@/lib/utils'
 import type { Entry, Habit } from '@api/types'
-import ProgressSpinner from 'primevue/progressspinner'
 import Card from 'primevue/card'
 import Knob from 'primevue/knob'
+import ProgressSpinner from 'primevue/progressspinner'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -87,15 +87,22 @@ const sessionGoalStatus = computed<'fail' | 'success' | 'pending'>(() => {
   return 'pending'
 })
 
-const fetchEntries = () => {
+// TODO: handle pagination!
+const fetchEntries = (range?: [dayjs.Dayjs, dayjs.Dayjs]) => {
   if (!habit.value) {
     return
   }
+
   RestClientSingleton
-    .getEntries({ habitId: `${habit.value.id}` })
-    // TODO: handle pagination!
+    .getEntries({
+      habitId: `${habit.value.id}`,
+      timeEnd: range?.[1].toISOString(),
+      timeStart: range?.[0].toISOString(),
+    })
     .then(({ count, results, next }) => {
-      globalProgress.value = count
+      if (!range) {
+        globalProgress.value = count
+      }
       entries.value = results
       nextLink.value = next ?? undefined
     })
@@ -110,11 +117,11 @@ const fetchEntries = () => {
 
 const addEntry = (date: dayjs.Dayjs) => {
   if (!habit.value) { return }
-  RestClientSingleton.addEntry({
+  return RestClientSingleton.addEntry({
     date: date.toISOString(),
-    habit: habit.value?.id,
+    habit: habit.value.id,
   })
-  .then(fetchEntries)
+  .then(() => fetchEntries())
   .catch((err) => {
     // TODO
     console.error('Error creating entry', err)
@@ -139,24 +146,39 @@ onMounted(async () => {
   const { goalFrom, goalTo, goalTimespan } = habit.value
   if (goalFrom && goalTo && goalTimespan) {
     sessionLifespan.value = findDateBucket(goalFrom, goalTo, goalTimespan, now())
-  }
-  if (sessionLifespan.value) {
-    const [timeStart, timeEnd] = sessionLifespan.value
     
-    RestClientSingleton
-      .getEntries({
-        habitId: `${habit.value.id}`,
-        timeEnd: timeEnd.toISOString(),
-        timeStart: timeStart.toISOString()
-      })
-      .then(({ count }) => entryCountInSession.value = count)
-      .catch((err) => {
-        // TODO
-        console.error('Error fetching entries', err)
-      })
+    // TODO use count endpoint once available
+    if (sessionLifespan.value) {
+      const [timeStart, timeEnd] = sessionLifespan.value
+      
+      RestClientSingleton
+        .getEntries({
+          habitId: `${habit.value.id}`,
+          timeEnd: timeEnd.toISOString(),
+          timeStart: timeStart.toISOString()
+        })
+        .then(({ count }) => entryCountInSession.value = count)
+        .catch((err) => {
+          // TODO
+          console.error('Error fetching entries', err)
+        })
+    }
   }
 
-  fetchEntries()
+  RestClientSingleton
+    .getEntries({ habitId: `${habit.value.id}` })
+    .then(({ count, results, next }) => {
+      globalProgress.value = count
+      entries.value = results
+      nextLink.value = next ?? undefined
+    })
+    .catch((err) => {
+      // TODO
+      console.error('Error fetching entries', err)
+    })
+    .finally(() => {
+      fetchingEntries.value = false
+    })
 })
 </script>
 
@@ -265,7 +287,11 @@ onMounted(async () => {
       <Card>
         <template #content>
           <ProgressSpinner v-if="fetchingEntries" />
-          <HabitCalendar v-else :entries="entries" @add-entry="addEntry" />
+          <HabitCalendar
+            v-else :entries="entries"
+            @add-entry="addEntry"
+            @change-range="fetchEntries"
+          />
         </template>
       </Card>
     </div>

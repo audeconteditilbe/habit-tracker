@@ -9,13 +9,13 @@ export const is = <T>(input: T): input is Exclude<T, undefined | null> =>
  * overlapping buckets of size bucketSize, returns the one containing target.
  * 
  * @example
- * # (0, 1), (2, 3), (4, 5), (6, 7), (8, 9), (10) -> buckets of size 2
+ * # (0, 1), (2, 3), (4, 5), (6, 7), (8, 9), (10)
  * findBucket(0, 10, 2, 7)
  * > [6, 7]
  * 
- * # (0, 1, 2), (3, 4, 5), (6, 7, 8), (9, 10) -> buckets of size 2
+ * # (0, 1, 2), (3, 4, 5), (6, 7, 8), (9, 10)
  * findBucket(0, 10, 3, 4)
- * > [6, 8]
+ * > [3, 5]
  */
 export const findBucket = (
   start: number,

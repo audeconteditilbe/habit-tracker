@@ -35,16 +35,6 @@ export default dayjs
  * Utils
  */
 
-export const weekDays = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-]
-
 const TODAY = 'Today'
 const YESTERDAY = 'Yesterday'
 const TOMORROW = 'Tomorrow'
@@ -59,6 +49,10 @@ export const isYesterday = (date: Dateable) => dayjs(date).isSame(daysAgo(1), 'd
 export const isThisWeek = (date: Dateable) => dayjs(date).isSame(now(), 'week')
 export const isThisMonth = (date: Dateable) => dayjs(date).isSame(now(), 'month')
 export const isThisYear = (date: Dateable) => dayjs(date).isSame(now(), 'year')
+
+export const isBetween = (date: Dateable, [start, end]: [Dateable, Dateable]) => {
+  return dayjs(date) >= dayjs(start) && dayjs(date) <= dayjs(end)
+}
 
 export const formatDate = (date: Dateable) => {
   return dayjs(date).format('L')//.toDate().toLocaleDateString()
@@ -143,3 +137,10 @@ export const findDateBucket = (
     startDate.add(bucket[1], 'day'),
   ]
 }
+
+const getWeekDays = (fmt: 'long' | 'short' = 'long') =>
+  listDaysBetween(now().startOf('week'), now().endOf('week'))
+    .map((date) => date.format(fmt === 'long' ? 'dddd' : 'ddd'))
+
+export const weekDays = getWeekDays('short')
+export const weekDaysShort = getWeekDays('short')

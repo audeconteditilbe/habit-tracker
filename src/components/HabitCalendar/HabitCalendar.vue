@@ -223,11 +223,12 @@ watch(
 
   .week-calendar {
     display: grid;
-    grid-template-columns: 1fr 7fr;
+    grid-template-columns: 1fr 10fr;
     grid-template-rows: repeat(2, 1fr);
     gap: var(--p-gap-s);
     align-items: center;
     width: inherit;
+    max-width: 60rem;
     
     .weekday {
       white-space: nowrap;

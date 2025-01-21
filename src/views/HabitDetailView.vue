@@ -194,94 +194,96 @@ onMounted(async () => {
         <p class="text-subtle">{{ habit.description }}</p>
       </div>
 
-      <!-- Time progression -->
-      <Card v-if="habit.goal && globalProgress && habit.goalFrom && habit.goalTo">
-        <template #title>
-          <h4>Progression</h4>
-        </template>
-        <template #content>
-          <TimeProgressBar :from="habit.goalFrom" :to="habit.goalTo" />
-        </template>
-      </Card>
-      
-      <!-- Goal progression (global) -->
-      <Card v-if="habit.goal && !habit.goalTimespan && globalProgress">
-        <template #title>
-          <h4>Goal</h4>
-        </template>
-        <template #content>
-          <div class="session-progress">
-            <Knob
-              readonly
-              :stroke-width="8"
-              :min="0"
-              :max="habit.goal"
-              :value-template="`${globalProgress} / ${habit.goal}`"
-              :model-value="globalProgress"
-              :valueColor="sessionGoalStatus === 'fail'
-                ? 'var(--error-color)'
-                : sessionGoalStatus === 'success'
-                  ? 'var(--success-color)'
-                  : undefined
-              "
-            />
-            <p v-if="
-              remainingDaysGlobal
-              && remainingDaysGlobal > 1
-              && habit.goal > globalProgress
-            ">
-              {{ remainingDaysGlobal }} days remaining to register
-              {{ habit.goal - globalProgress }} entries!
-            </p>
-            <p v-else-if="remainingDaysGlobal === 1 && habit.goal > globalProgress">
-              Today is the last day to register {{ habit.goal - globalProgress }}
-              entries!
-            </p>
-            <p v-else-if="habit.goal <= globalProgress">
-              You achieved your goal! Great job!
-            </p>
-          </div>
-        </template>
-      </Card>
-      <!-- Goal progression (current cycle) -->
-      <Card v-else-if="habit.goal && habit.goalTimespan">
-        <template #title>
-          <h4>Current goal</h4>
-        </template>
-        <template #content>
-          <TimeProgressBar v-if="sessionLifespan" :from="sessionLifespan[0]" :to="sessionLifespan[1]" />
-          <div class="session-progress">
-            <Knob
-              readonly
-              :stroke-width="8"
-              :min="0"
-              :max="habit.goal"
-              :value-template="`${entryCountInSession} / ${habit.goal}`"
-              :model-value="Math.min(entryCountInSession, habit.goal)"
-              :valueColor="sessionGoalStatus === 'fail'
-                ? 'var(--error-color)'
-                : sessionGoalStatus === 'success'
-                  ? 'var(--success-color)'
-                  : undefined"
-            />
-            <p v-if="
-              remainingDaysInSession
-              && remainingDaysInSession > 1
-              && habit.goal > entryCountInSession
-            ">
-              {{ remainingDaysInSession }} days remaining to register
-              {{ habit.goal - entryCountInSession }} entries!
-            </p>
-            <p v-else-if="remainingDaysInSession === 1 && habit.goal > entryCountInSession">
-              Today is the last day to register {{ habit.goal - entryCountInSession }}
-              entries!
-            </p>
-            <p v-else-if="habit.goal <= entryCountInSession">
-              You achieved your goal! Great job!
-            </p>
-          </div>
-        </template>
-      </Card>
+      <div class="summary">
+        <!-- Time progression -->
+        <Card class="time-progress-card" v-if="habit.goal && globalProgress && habit.goalFrom && habit.goalTo">
+          <template #title>
+            <h4>Progression</h4>
+          </template>
+          <template #content>
+            <TimeProgressBar :from="habit.goalFrom" :to="habit.goalTo" />
+          </template>
+        </Card>
+        
+        <!-- Goal progression (global) -->
+        <Card class="session-progress-card" v-if="habit.goal && !habit.goalTimespan && globalProgress">
+          <template #title>
+            <h4>Goal</h4>
+          </template>
+          <template #content>
+            <div class="session-progress-content">
+              <Knob
+                readonly
+                :stroke-width="8"
+                :min="0"
+                :max="habit.goal"
+                :value-template="`${globalProgress} / ${habit.goal}`"
+                :model-value="globalProgress"
+                :valueColor="sessionGoalStatus === 'fail'
+                  ? 'var(--error-color)'
+                  : sessionGoalStatus === 'success'
+                    ? 'var(--success-color)'
+                    : undefined
+                "
+              />
+              <p v-if="
+                remainingDaysGlobal
+                && remainingDaysGlobal > 1
+                && habit.goal > globalProgress
+              ">
+                {{ remainingDaysGlobal }} days remaining to register
+                {{ habit.goal - globalProgress }} entries!
+              </p>
+              <p v-else-if="remainingDaysGlobal === 1 && habit.goal > globalProgress">
+                Today is the last day to register {{ habit.goal - globalProgress }}
+                entries!
+              </p>
+              <p v-else-if="habit.goal <= globalProgress">
+                You achieved your goal! Great job!
+              </p>
+            </div>
+          </template>
+        </Card>
+        <!-- Goal progression (current cycle) -->
+        <Card class="session-progress-card" v-else-if="habit.goal && habit.goalTimespan">
+          <template #title>
+            <h4>Current goal</h4>
+          </template>
+          <template #content>
+            <TimeProgressBar v-if="sessionLifespan" :from="sessionLifespan[0]" :to="sessionLifespan[1]" />
+            <div class="session-progress-content">
+              <Knob
+                readonly
+                :stroke-width="8"
+                :min="0"
+                :max="habit.goal"
+                :value-template="`${entryCountInSession} / ${habit.goal}`"
+                :model-value="Math.min(entryCountInSession, habit.goal)"
+                :valueColor="sessionGoalStatus === 'fail'
+                  ? 'var(--error-color)'
+                  : sessionGoalStatus === 'success'
+                    ? 'var(--success-color)'
+                    : undefined"
+              />
+              <p v-if="
+                remainingDaysInSession
+                && remainingDaysInSession > 1
+                && habit.goal > entryCountInSession
+              ">
+                {{ remainingDaysInSession }} days remaining to register
+                {{ habit.goal - entryCountInSession }} entries!
+              </p>
+              <p v-else-if="remainingDaysInSession === 1 && habit.goal > entryCountInSession">
+                Today is the last day to register {{ habit.goal - entryCountInSession }}
+                entries!
+              </p>
+              <p v-else-if="habit.goal <= entryCountInSession">
+                You achieved your goal! Great job!
+              </p>
+            </div>
+          </template>
+        </Card>
+      </div>
 
       <!-- Calendar -->
       <Card>
@@ -316,10 +318,28 @@ onMounted(async () => {
     align-items: center;
     justify-content: center;
   }
-}
-.session-progress {
-  display: flex;
-  align-items: center;
-  gap: var(--p-gap-m);
+  
+  .summary {
+    display: flex;
+    flex-direction: row;
+    gap: var(--p-gap-m);
+    flex-wrap: wrap;
+
+    .time-progress-card {
+      flex-grow: 1;
+      min-width: 15rem;
+    }
+    
+    .session-progress-card {
+      flex-grow: 1;
+      min-width: 15rem;
+      
+      .session-progress-content {
+        display: flex;
+        align-items: center;
+        gap: var(--p-gap-m);
+      }
+    }
+  }
 }
 </style>

@@ -260,7 +260,9 @@ watch(
       flex-grow: 1;
       flex-wrap: wrap;
       padding: var(--p-padding-xs);
-
+      justify-content: center;
+      max-height: 10rem;
+      overflow-y: auto;
       .event-indicator {
         width: 1rem;
         height: 1rem;

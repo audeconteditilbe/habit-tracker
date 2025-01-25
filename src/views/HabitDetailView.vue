@@ -157,7 +157,7 @@ onMounted(async () => {
           timeEnd: timeEnd.toISOString(),
           timeStart: timeStart.toISOString()
         })
-        .then(({ count }) => entryCountInSession.value = count)
+        .then(({ count }) =>  entryCountInSession.value = count)
         .catch((err) => {
           // TODO
           console.error('Error fetching entries', err)
@@ -165,20 +165,7 @@ onMounted(async () => {
     }
   }
 
-  RestClientSingleton
-    .getEntries({ habitId: `${habit.value.id}` })
-    .then(({ count, results, next }) => {
-      globalProgress.value = count
-      entries.value = results
-      nextLink.value = next ?? undefined
-    })
-    .catch((err) => {
-      // TODO
-      console.error('Error fetching entries', err)
-    })
-    .finally(() => {
-      fetchingEntries.value = false
-    })
+  fetchEntries()
 })
 </script>
 

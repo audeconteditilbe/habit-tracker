@@ -207,7 +207,7 @@ watch(
   align-items: center;
   width: 100%;
   overflow: auto;
-  gap: var(--p-gap-m);
+  gap: var(--p-gap-xl);
 
   .header {
     display: flex;
@@ -228,7 +228,6 @@ watch(
     gap: var(--p-gap-s);
     align-items: center;
     width: inherit;
-    max-width: 60rem;
     
     .weekday {
       white-space: nowrap;
@@ -264,6 +263,7 @@ watch(
       justify-content: center;
       max-height: 10rem;
       overflow-y: auto;
+
       .event-indicator {
         width: 1rem;
         height: 1rem;

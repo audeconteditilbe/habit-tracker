@@ -31,8 +31,8 @@ body {
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 2px;
+  width: var(--scrollbar-width);
+  height: var(--scrollbar-height);
 }
 ::-webkit-scrollbar-track {
   background: var(--scrollbar-track-bg);

@@ -2,6 +2,7 @@ import dayjs, { Dayjs, type ConfigType } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import calendar from 'dayjs/plugin/calendar'
+// import weekday from 'dayjs/plugin/weekday'
 // import updateLocale from 'dayjs/plugin/updateLocale'
 
 import { findBucket, type Valid } from './utils'
@@ -14,6 +15,7 @@ export type Dateable = Valid<ConfigType>
 dayjs.extend(relativeTime)
 dayjs.extend(localizedFormat)
 dayjs.extend(calendar)
+// dayjs.extend(weekday)
 
 // dayjs.extend(updateLocale)
 // dayjs.updateLocale('en', {
@@ -33,18 +35,35 @@ export default dayjs
  * Utils
  */
 
+type StartDay = 'monday' | 'sunday'
+type WeekdayNr = 0 | 1 | 2 | 3 | 4 | 5 | 6
+
 const TODAY = 'Today'
 const YESTERDAY = 'Yesterday'
 const TOMORROW = 'Tomorrow'
 const LAST = 'Last'
 
 export const now = () => dayjs()
+export const isSameDay = (date: Dateable, date2: Dateable) =>
+  dayjs(date).isSame(date2, 'day')
 
 export const isToday = (date: Dateable) => dayjs(date).isSame(now(), 'day')
 export const isYesterday = (date: Dateable) => dayjs(date).isSame(daysAgo(1), 'day')
 export const isThisWeek = (date: Dateable) => dayjs(date).isSame(now(), 'week')
 export const isThisMonth = (date: Dateable) => dayjs(date).isSame(now(), 'month')
 export const isThisYear = (date: Dateable) => dayjs(date).isSame(now(), 'year')
+
+// weekday starts from monday
+const normalizeWeekday = (day: WeekdayNr): WeekdayNr => {
+  return (day === 0 ? 6 : day - 1) as WeekdayNr
+}
+
+export const getWeekday = (date: Dateable, startOn: StartDay = 'monday'): WeekdayNr => 
+  startOn === 'monday' ? normalizeWeekday(dayjs(date).day()) : dayjs(date).day()
+
+export const isBetween = (date: Dateable, [start, end]: [Dateable, Dateable]) => {
+  return dayjs(date) >= dayjs(start) && dayjs(date) <= dayjs(end)
+}
 
 export const formatDate = (date: Dateable) => {
   return dayjs(date).format('L')//.toDate().toLocaleDateString()
@@ -62,7 +81,6 @@ export const humanReadableDate = (date: Dateable) => {
     sameElse: 'L'
   })
 }
-
 
 export const daysAgo = (span: number, start: Dateable = new Date()): Dayjs => {
   return dayjs(start).add(-span, 'day')
@@ -130,3 +148,16 @@ export const findDateBucket = (
     startDate.add(bucket[1], 'day'),
   ]
 }
+
+const getWeekDays = (fmt: 'long' | 'short' = 'long', startOn: StartDay = 'monday') => {
+  const days = listDaysBetween(now().startOf('week'), now().endOf('week'))
+    .map((date) => date.format(fmt === 'long' ? 'dddd' : 'ddd'))
+  
+  if (startOn === 'sunday') {
+    return days
+  }
+  return [...days.slice(1), days[0]]
+}
+
+export const WEEK_DAYS = getWeekDays('short')
+export const WEEK_DAYS_SHORT = getWeekDays('short')

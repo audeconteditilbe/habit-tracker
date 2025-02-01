@@ -1,6 +1,6 @@
 import createOpenApiClient from 'openapi-fetch'
 
-import type { EntriesListQuery } from '@api/types'
+import type { EntriesListQuery, Entry } from '@api/types'
 import type { paths } from '@api/rest-api'
 import { accessTokenService, refreshTokenService } from '@/lib/auth'
 
@@ -73,6 +73,7 @@ export class RestClient {
       return Promise.reject(err)
     })
   }
+
   async login(username: string, password: string) {
     return this._client.POST('/api/token/', {
       body: { username, password },
@@ -154,6 +155,19 @@ export class RestClient {
     })
   }
 
+  async addEntry(entry: Omit<Entry, 'id'>) {
+    return this._client.POST(
+      "/api/entries",
+      // TODO
+      // @ts-expect-error fix schema
+      { body: entry, headers: this.authHeaders }
+    )
+    .then(handleResponse)
+    .catch((err: Error) => {
+      console.error('Error creating entry', err)
+      return Promise.reject(err)
+    })
+  }
   // entries_create
   // entries_retrieve
   // entries_destroy

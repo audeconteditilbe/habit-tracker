@@ -35,6 +35,9 @@ export default dayjs
  * Utils
  */
 
+type StartDay = 'monday' | 'sunday'
+type WeekdayNr = 0 | 1 | 2 | 3 | 4 | 5 | 6
+
 const TODAY = 'Today'
 const YESTERDAY = 'Yesterday'
 const TOMORROW = 'Tomorrow'
@@ -49,6 +52,14 @@ export const isYesterday = (date: Dateable) => dayjs(date).isSame(daysAgo(1), 'd
 export const isThisWeek = (date: Dateable) => dayjs(date).isSame(now(), 'week')
 export const isThisMonth = (date: Dateable) => dayjs(date).isSame(now(), 'month')
 export const isThisYear = (date: Dateable) => dayjs(date).isSame(now(), 'year')
+
+// weekday starts from monday
+const normalizeWeekday = (day: WeekdayNr): WeekdayNr => {
+  return (day === 0 ? 6 : day - 1) as WeekdayNr
+}
+
+export const getWeekday = (date: Dateable, startOn: StartDay = 'monday'): WeekdayNr => 
+  startOn === 'monday' ? normalizeWeekday(dayjs(date).day()) : dayjs(date).day()
 
 export const isBetween = (date: Dateable, [start, end]: [Dateable, Dateable]) => {
   return dayjs(date) >= dayjs(start) && dayjs(date) <= dayjs(end)
@@ -138,9 +149,15 @@ export const findDateBucket = (
   ]
 }
 
-const getWeekDays = (fmt: 'long' | 'short' = 'long') =>
-  listDaysBetween(now().startOf('week'), now().endOf('week'))
+const getWeekDays = (fmt: 'long' | 'short' = 'long', startOn: StartDay = 'monday') => {
+  const days = listDaysBetween(now().startOf('week'), now().endOf('week'))
     .map((date) => date.format(fmt === 'long' ? 'dddd' : 'ddd'))
+  
+  if (startOn === 'sunday') {
+    return days
+  }
+  return [...days.slice(1), days[0]]
+}
 
-export const weekDays = getWeekDays('short')
-export const weekDaysShort = getWeekDays('short')
+export const WEEK_DAYS = getWeekDays('short')
+export const WEEK_DAYS_SHORT = getWeekDays('short')

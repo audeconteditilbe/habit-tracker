@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import dayjs, { isSameDay, listDaysBetween, now, weekDaysShort } from '@/lib/date';
+import dayjs, { getWeekday, isSameDay, listDaysBetween, now, WEEK_DAYS_SHORT } from '@/lib/date';
 import { countTo } from '@/lib/utils';
 import type { Entry } from '@api/types';
 import type { Dayjs } from 'dayjs';
@@ -71,9 +71,8 @@ const slotsWithPadding = computed<(Slot | null)[]>(() => {
   if (view.value === 'week') {
     return slots.value
   }
-  const firstDay = currentRange.value[0].day()
-  const firstDayOffset = (firstDay === 0 ? 6 : firstDay - 1)
-  return [...Array(firstDayOffset).fill(null), ...slots.value]
+  const firstDay = getWeekday(currentRange.value[0])
+  return [...Array(firstDay).fill(null), ...slots.value]
 })
 
 const toPrev = () => {
@@ -151,11 +150,13 @@ watch(
     
     <div v-if="view === 'month'" class="month-calendar">
       <div v-for="index in countTo(6)" :key="index" class="ellipsable">
-        <span>{{ weekDaysShort[index] }}</span>
+        <span>{{ WEEK_DAYS_SHORT[index] }}</span>
       </div>
       <div
         v-for="(slot, index) in slotsWithPadding"
-        :class="'day'+`${slot?.date && isSameDay(now(), slot.date) ? ' today' : ''}`"
+        :class="slot
+          ? 'day'+`${slot?.date && isSameDay(now(), slot.date) ? ' today' : ''}`
+          : ''"
         :key="index"
       >
         <template v-if="slot">
@@ -163,7 +164,9 @@ watch(
             {{ slot.date.date() }}
           </span>
           <div class="day-body">
-            <div v-for="{id} in slot.entries" :key="id" class="event-indicator" />
+            <div v-if="slot.entries.length > 0" class="event-indicator">
+              {{ slot.entries.length }}
+            </div>
           </div>
           <div class="day-footer">
             <Button
@@ -232,12 +235,27 @@ watch(
     .weekday {
       white-space: nowrap;
     }
+
+    .event-indicator {
+      width: 1rem;
+      height: 1rem;
+    }
   }
 
   .month-calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     width: inherit;
+    
+    .event-indicator {
+      width: 1.3rem;
+      height: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      color: var(--p-surface-800);
+    }
   }
 
   .day {
@@ -265,8 +283,6 @@ watch(
       overflow-y: auto;
 
       .event-indicator {
-        width: 1rem;
-        height: 1rem;
         background-color: var(--p-primary-500);
         border-radius: 50%;
       }

@@ -812,43 +812,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/core@npm:^6.1.15":
-  version: 6.1.15
-  resolution: "@fullcalendar/core@npm:6.1.15"
-  dependencies:
-    preact: "npm:~10.12.1"
-  checksum: 10c0/628445dcbfcf9c5a4012cde3ba814af7b74db66c4ec71743fe9c5f5376f96d4b18922d257ad8d5ccf1211b2415d1094dd05e2f4f3324d4dbe880a94f7e5793b7
-  languageName: node
-  linkType: hard
-
-"@fullcalendar/daygrid@npm:^6.1.15":
-  version: 6.1.15
-  resolution: "@fullcalendar/daygrid@npm:6.1.15"
-  peerDependencies:
-    "@fullcalendar/core": ~6.1.15
-  checksum: 10c0/52ba7a479675aa8e2bd36ca6c00c9cc28f11539710cf7a233e8657835b29fe21954e732a23c9b7c7c345c5b6b3c08e3af24ce9125ec28478176cce1b3e7d0da4
-  languageName: node
-  linkType: hard
-
-"@fullcalendar/interaction@npm:^6.1.15":
-  version: 6.1.15
-  resolution: "@fullcalendar/interaction@npm:6.1.15"
-  peerDependencies:
-    "@fullcalendar/core": ~6.1.15
-  checksum: 10c0/f9e2542965b3d28a4eb65638a21d036d883399956781649f5442c2fb681ee59ea5fb071779be04acb88afed9278d38fc6f5758dc8a6dfa1d7b90cb6858a0115e
-  languageName: node
-  linkType: hard
-
-"@fullcalendar/vue3@npm:^6.1.15":
-  version: 6.1.15
-  resolution: "@fullcalendar/vue3@npm:6.1.15"
-  peerDependencies:
-    "@fullcalendar/core": ~6.1.15
-    vue: ^3.0.11
-  checksum: 10c0/045f9e9eb6fa5528936a1aa204e4dabe8c67daf8493f92bcb80e60b325ac4a29132f8ccb8f376c7c49845e582c36e007727a6c27606c2c1b3bc3c9de817a5dea
-  languageName: node
-  linkType: hard
-
 "@graphql-typed-document-node/core@npm:^3.1.1":
   version: 3.2.0
   resolution: "@graphql-typed-document-node/core@npm:3.2.0"
@@ -1059,6 +1022,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@primeuix/forms@npm:^0.0.2":
+  version: 0.0.2
+  resolution: "@primeuix/forms@npm:0.0.2"
+  dependencies:
+    "@primeuix/utils": "npm:^0.3.0"
+  checksum: 10c0/6c9a98284f77ffd4f3f69cc04fa83e26bf5bcf29921d985b2a2a1bc2b94afa045ecfb78d7f3b00f9b63e46bcddb09143d4c695b9acbc9b7542463ea37a9f04dd
+  languageName: node
+  linkType: hard
+
 "@primeuix/styled@npm:^0.3.2":
   version: 0.3.2
   resolution: "@primeuix/styled@npm:0.3.2"
@@ -1068,7 +1040,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@primeuix/utils@npm:^0.3.2":
+"@primeuix/utils@npm:^0.3.0, @primeuix/utils@npm:^0.3.2":
   version: 0.3.2
   resolution: "@primeuix/utils@npm:0.3.2"
   checksum: 10c0/3ada284a982519c4e3cae9ed83e17dbae9d6e505a16b699fa37d69ca14e46350076389f70ef3a5b1a359ba6a0891299a20ec4f9a6ed330ab3bbda7d227e9b84f
@@ -1084,6 +1056,17 @@ __metadata:
   peerDependencies:
     vue: ^3.3.0
   checksum: 10c0/36d73f72c83428b49c4cb49fe9af08230267bdf2d29cfc55f50f24d12873ef69f4f72fe8fc4c3df1544f72a0c313a4b855525960c31c87da0dfb71923ddde102
+  languageName: node
+  linkType: hard
+
+"@primevue/forms@npm:^4.2.5":
+  version: 4.2.5
+  resolution: "@primevue/forms@npm:4.2.5"
+  dependencies:
+    "@primeuix/forms": "npm:^0.0.2"
+    "@primeuix/utils": "npm:^0.3.2"
+    "@primevue/core": "npm:4.2.5"
+  checksum: 10c0/1ba4cf767260bf0a04ba3b02d83f16d02a50493fbea1cc5496e5b338dd8feb429493cd6f19a13210ac47e175593e9d469b23a15eea9e7d6c8ce9e554511fb9c1
   languageName: node
   linkType: hard
 
@@ -3450,11 +3433,8 @@ __metadata:
   resolution: "habit-tracker@workspace:."
   dependencies:
     "@apollo/client": "npm:^3.12.4"
-    "@fullcalendar/core": "npm:^6.1.15"
-    "@fullcalendar/daygrid": "npm:^6.1.15"
-    "@fullcalendar/interaction": "npm:^6.1.15"
-    "@fullcalendar/vue3": "npm:^6.1.15"
     "@playwright/test": "npm:^1.49.1"
+    "@primevue/forms": "npm:^4.2.5"
     "@primevue/themes": "npm:^4.2.5"
     "@tsconfig/node22": "npm:^22.0.0"
     "@types/jsdom": "npm:^21.1.7"
@@ -4782,13 +4762,6 @@ __metadata:
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
   checksum: 10c0/f1b3f17aaf36d136f59ec373459f18129908235e65dbdc3aee5eef8eba0756106f52de5ec4682e29a2eab53eb25170e7e871b3e4b52a8f1de3d344a514306be3
-  languageName: node
-  linkType: hard
-
-"preact@npm:~10.12.1":
-  version: 10.12.1
-  resolution: "preact@npm:10.12.1"
-  checksum: 10c0/c77a55e897dcf298b7aa13637fed29744d3cf6c083f2832856e8551dbf27303c8b6946569736de16b05cba15c0e44ad404beb236ad9e36583a6fc5e2efad7777
   languageName: node
   linkType: hard
 

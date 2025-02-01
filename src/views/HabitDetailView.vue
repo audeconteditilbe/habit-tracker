@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RestClientSingleton } from '@/clients'
+import AddEntryDrawer from '@/components/AddEntryDrawer'
 import HabitCalendar from '@/components/HabitCalendar/HabitCalendar.vue'
 import ProtectedRoute from '@/components/ProtectedRoute.vue'
 import TimeProgressBar from '@/components/TimeProgressBar.vue'
@@ -24,6 +25,9 @@ const fetchingEntries = ref<boolean>(true)
 const sessionLifespan = ref<[dayjs.Dayjs, dayjs.Dayjs] | null>(null)
 const entryCountInSession = ref<number>(0)
 const globalProgress = ref<number>(0)
+
+const entryDrawerVisible = ref<boolean>(false)
+const selectedDate = ref<dayjs.Dayjs | undefined>()
 
 const remainingDaysInSession = computed<number | null>(() => {
   if (sessionLifespan.value) {
@@ -87,6 +91,20 @@ const sessionGoalStatus = computed<'fail' | 'success' | 'pending'>(() => {
   return 'pending'
 })
 
+// const visible = ref<boolean>(false)
+const onUpdateVisible = ref<(val: boolean) => void>((val) => {
+  // visible.value = val
+  if (!val) {
+    selectedDate.value = undefined
+  }
+})
+
+const onAddEntry = (date: dayjs.Dayjs) => {
+  entryDrawerVisible.value = true
+  selectedDate.value = date
+  // visible.value = true
+}
+
 // TODO: handle pagination!
 const fetchEntries = (range?: [dayjs.Dayjs, dayjs.Dayjs]) => {
   if (!habit.value) {
@@ -115,16 +133,23 @@ const fetchEntries = (range?: [dayjs.Dayjs, dayjs.Dayjs]) => {
     })
 }
 
-const addEntry = (date: dayjs.Dayjs) => {
+const addEntry = (values: Omit<Entry, 'id' | 'habit'>) => {
   if (!habit.value) { return }
+
   return RestClientSingleton.addEntry({
-    date: date.toISOString(),
+    ...values,
     habit: habit.value.id,
   })
-  .then(() => fetchEntries())
+  .then((entry) => {
+    entries.value.push(entry)
+    // fetchEntries()
+  })
   .catch((err) => {
     // TODO
     console.error('Error creating entry', err)
+  })
+  .finally(() => {
+    selectedDate.value = undefined
   })
 }
 
@@ -277,13 +302,25 @@ onMounted(async () => {
         <template #content>
           <ProgressSpinner v-if="fetchingEntries" />
           <HabitCalendar
-            v-else :entries="entries"
-            @add-entry="addEntry"
+            v-else
+            :entries="entries"
+            @add-entry="onAddEntry"
             @change-range="fetchEntries"
           />
         </template>
       </Card>
     </div>
+    
+    <!-- Creation Drawer -->
+    <AddEntryDrawer
+      v-if="habit?.id !== undefined"
+      :visible="Boolean(selectedDate)"
+      @update-visible="onUpdateVisible"
+      :habitId="`${habit.id}`"
+      :initialValues="{date: selectedDate?.toISOString()}"
+      @submit="addEntry"
+    />
+
   </ProtectedRoute>
 </template>
 

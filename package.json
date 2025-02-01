@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.12.4",
+    "@primevue/forms": "^4.2.5",
     "@primevue/themes": "^4.2.5",
     "axios": "^1.7.9",
     "dayjs": "^1.11.13",
